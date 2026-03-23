@@ -4,6 +4,20 @@
 
 ---
 
+## 模型权重下载
+
+模型权重存储在 HuggingFace Hub：https://huggingface.co/ludandaye/hidden-layer-connection-by-CS
+
+```bash
+# 下载全部权重
+huggingface-cli download ludandaye/hidden-layer-connection-by-CS --local-dir models/
+
+# 或单独下载 V7.1（推荐）
+huggingface-cli download ludandaye/hidden-layer-connection-by-CS models/v7.1_classifier/best_model.pt --local-dir .
+```
+
+---
+
 ## 目录
 
 1. [研究背景与动机](#1-研究背景与动机)
