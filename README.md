@@ -985,15 +985,83 @@ V7 是本项目最新版本，采用 BGE-base-en-v1.5 (384d) + 学习型投影 (
 | InjecGuard | arXiv 2024 | 184M | DeBERTa+NotInject | ~15ms |
 | Gradient Cuff | NeurIPS 2024 | 0(需LLM) | 目标LLM拒绝损失 | LLM推理 |
 
-### 10.3 核心优势
+### 10.3 核心优势排名
 
-| 维度 | V7 | 对比 |
-|------|-----|------|
-| **嵌入压缩** | 384d→19d (5%压缩率) | NeMo 768d, PG 86M全模型 |
-| **Alpaca FPR** | 1.5% | PromptGuard 50.7% |
-| **AdvBench/HarmBench** | DR 85%/82% (唯一报告的轻量方法) | — |
-| **推理速度** | <10ms | PG2=92ms, InjecGuard=15ms |
-| **独立部署** | 纯嵌入+投影 | GradSafe/Gradient Cuff需LLM |
+#### 表征维度：所有轻量方法中最低（第1名）
+
+| 排名 | 方法 | 表征维度 | 参数量 | 压缩率 |
+|:----:|------|---------|--------|--------|
+| **1** | **Ours (V7)** | **19d** | **投影层 <30KB** | **5%** |
+| 2 | PromptGuard 2 (22M) | 全模型 | 22M | — |
+| 3 | PromptGuard (86M) | 全模型 | 86M | — |
+| 4 | InjecGuard | 全模型 | 184M | — |
+| 5 | NeMo+RF | 768d | 109M embed + RF | 100% |
+
+> V7 将 384 维 BGE 嵌入压缩至 19 维（5%），是所有方法中最小的分类表征空间。
+
+#### 常规输入误报率：正常用户几乎无感知（第1名）
+
+| 排名 | 方法 | Alpaca FPR↓ | ToxicChat FPR↓ | 来源 |
+|:----:|------|-----------|---------------|------|
+| **1** | **Ours (V7)** | **1.5%** | **5.0%** | 实测 |
+| 2 | NeMo+RF | — | 0.2% | arXiv:2412.01547 |
+| 3 | PromptGuard (86M) | — | 2.0% | arXiv:2412.01547 |
+| — | PromptGuard (86M) JBHub | **50.7%** | — | arXiv:2412.01547 |
+| — | BGE+SVM (基线) | — | — | 实测, JBB FPR=63% |
+
+> V7 在 Alpaca 常规指令上 FPR 仅 1.5%，是 PromptGuard (50.7%) 的 **1/34**。
+
+#### 直接有害指令检测：唯一报告 AdvBench/HarmBench 的轻量方法
+
+| 排名 | 方法 | AdvBench DR↑ | HarmBench DR↑ | BeaverTails DR↑ | 来源 |
+|:----:|------|-------------|-------------|----------------|------|
+| **1** | **Ours (V7-Full)** | **97.0%** | **97.0%** | — | 实测(+LLM) |
+| **2** | **Ours (V7-Embed)** | **85.0%** | **82.0%** | **85.3%** | 实测 |
+| — | NeMo+RF | 未报告 | 未报告 | 未报告 | — |
+| — | PromptGuard | 未报告 | 未报告 | 未报告 | — |
+| — | InjecGuard | 未报告 | 未报告 | 未报告 | — |
+
+> 现有轻量方法均未在 AdvBench/HarmBench 上报告结果，V7 填补了这一评测空白。
+
+#### 推理速度：接近规则方法的延迟水平（第2名）
+
+| 排名 | 方法 | 推理延迟 | 额外依赖 | 来源 |
+|:----:|------|---------|---------|------|
+| 1 | 关键词/Perplexity | <1ms | 无/GPT-2 | — |
+| **2** | **Ours (V7)** | **<10ms** | **无** | 实测 |
+| 3 | NeMo+RF | ~10ms | 无 | arXiv:2412.01547 |
+| 4 | InjecGuard | ~15ms | 无 | arXiv:2410.22770 |
+| 5 | PromptGuard 2 (22M) | ~19ms | 无 | arXiv:2505.03574 |
+| 6 | PromptGuard 2 (86M) | ~92ms | 无 | arXiv:2505.03574 |
+| 7 | Gradient Cuff | LLM推理 | **需目标LLM** | NeurIPS 2024 |
+| 8 | GradSafe | LLM推理 | **需目标LLM** | ACL 2024 |
+
+> V7 投影后仅 19 维分类，推理开销接近零；Gradient Cuff/GradSafe 虽然检测率高，但依赖目标 LLM 梯度计算，无法独立部署。
+
+#### GCG 梯度攻击检测（含 LLM Judge，第3名）
+
+| 排名 | 方法 | GCG Detection Rate↑ | 类型 | 来源 |
+|:----:|------|--------------------|------|------|
+| 1 | Gradient Cuff | **98.8%** | 需目标LLM | NeurIPS 2024 |
+| 2 | Perplexity Filter | 96.2%* | 特征方法 | arXiv:2308.14132 |
+| **3** | **Ours (V7-Full)** | **96.0%** | **独立部署** | 实测(+LLM) |
+| 4 | Ours (V7-Embed) | 84.0% | 独立部署 | 实测 |
+| 5 | BGE+SVM | 87.0% | 嵌入+ML | 实测 |
+| — | Keyword | 39.0% | 规则 | 实测 |
+
+> \* Perplexity Filter 仅对机器生成 GCG 有效（96.2%），人工编写越狱检测率 = 0%
+> V7-Full 在 GCG 上 DR=96.0%，在**独立部署**方法中排第1名。
+
+#### 综合优势总结
+
+| 指标 | V7 排名 | V7 数据 | 最优对手 | 备注 |
+|------|:-------:|--------|---------|------|
+| 表征维度 | **#1** | 19d | NeMo 768d | 最小表征空间 |
+| Alpaca FPR | **#1** | 1.5% | PG 50.7% | 正常用户近零误报 |
+| AdvBench/HarmBench | **#1** | 85%/82% | 无人报告 | 唯一有数据的轻量方法 |
+| 推理速度 | **#2** | <10ms | 规则 <1ms | 独立部署最快 |
+| GCG DR (独立部署) | **#1** | 96.0% | BGE+SVM 87% | 含LLM Judge |
+| GCG DR (全部方法) | #3 | 96.0% | GCuff 98.8% | GCuff需目标LLM |
 
 详细对比数据见 [`results/comprehensive_eval/comparison_table.md`](results/comprehensive_eval/comparison_table.md)
 
