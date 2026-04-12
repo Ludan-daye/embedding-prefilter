@@ -1,0 +1,122 @@
+{
+  "8d_1c": {
+    "dim": 8,
+    "nc": 1,
+    "threshold": -0.03,
+    "val_f1": 0.9367,
+    "val_fpr": 0.04,
+    "train_f1": 0.9426
+  },
+  "8d_3c": {
+    "dim": 8,
+    "nc": 3,
+    "threshold": 0.0,
+    "val_f1": 0.9392,
+    "val_fpr": 0.0431,
+    "train_f1": 0.939
+  },
+  "8d_5c": {
+    "dim": 8,
+    "nc": 5,
+    "threshold": 0.01,
+    "val_f1": 0.8939,
+    "val_fpr": 0.0185,
+    "train_f1": 0.9182
+  },
+  "16d_1c": {
+    "dim": 16,
+    "nc": 1,
+    "threshold": 0.01,
+    "val_f1": 0.9407,
+    "val_fpr": 0.0338,
+    "train_f1": 0.9547
+  },
+  "16d_3c": {
+    "dim": 16,
+    "nc": 3,
+    "threshold": 0.01,
+    "val_f1": 0.9029,
+    "val_fpr": 0.0123,
+    "train_f1": 0.9239
+  },
+  "16d_5c": {
+    "dim": 16,
+    "nc": 5,
+    "threshold": 0.01,
+    "val_f1": 0.8879,
+    "val_fpr": 0.0123,
+    "train_f1": 0.9158
+  },
+  "32d_1c": {
+    "dim": 32,
+    "nc": 1,
+    "threshold": 0.0,
+    "val_f1": 0.9496,
+    "val_fpr": 0.0338,
+    "train_f1": 0.9615
+  },
+  "32d_3c": {
+    "dim": 32,
+    "nc": 3,
+    "threshold": 0.01,
+    "val_f1": 0.9172,
+    "val_fpr": 0.0092,
+    "train_f1": 0.9328
+  },
+  "32d_5c": {
+    "dim": 32,
+    "nc": 5,
+    "threshold": 0.01,
+    "val_f1": 0.8924,
+    "val_fpr": 0.0092,
+    "train_f1": 0.9159
+  },
+  "64d_1c": {
+    "dim": 64,
+    "nc": 1,
+    "threshold": -0.03,
+    "val_f1": 0.9478,
+    "val_fpr": 0.04,
+    "train_f1": 0.9652
+  },
+  "64d_3c": {
+    "dim": 64,
+    "nc": 3,
+    "threshold": 0.0,
+    "val_f1": 0.9451,
+    "val_fpr": 0.0338,
+    "train_f1": 0.9656
+  },
+  "64d_5c": {
+    "dim": 64,
+    "nc": 5,
+    "threshold": 0.0,
+    "val_f1": 0.9172,
+    "val_fpr": 0.0492,
+    "train_f1": 0.9429
+  },
+  "128d_1c": {
+    "dim": 128,
+    "nc": 1,
+    "threshold": -0.02,
+    "val_f1": 0.9518,
+    "val_fpr": 0.0338,
+    "train_f1": 0.9692
+  },
+  "128d_3c": {
+    "dim": 128,
+    "nc": 3,
+    "threshold": 0.0,
+    "val_f1": 0.9474,
+    "val_fpr": 0.0338,
+    "train_f1": 0.9694
+  },
+  "128d_5c": {
+    "dim": 128,
+    "nc": 5,
+    "threshold": 0.01,
+    "val_f1": 0.8496,
+    "val_fpr": 0.0062,
+    "train_f1": 0.8944
+  }
+}

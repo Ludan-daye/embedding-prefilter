@@ -1,0 +1,320 @@
+{
+  "8d_1c": {
+    "GCG": {
+      "detection_rate": 0.97,
+      "asr": 0.03,
+      "total": 100
+    },
+    "PAIR": {
+      "detection_rate": 0.8372,
+      "asr": 0.1628,
+      "total": 86
+    },
+    "JailbreakHub": {
+      "detection_rate": 0.8608,
+      "asr": 0.1392,
+      "total": 79
+    },
+    "AdvBench": {
+      "detection_rate": 0.98,
+      "asr": 0.02,
+      "total": 200
+    },
+    "HarmBench": {
+      "detection_rate": 0.96,
+      "asr": 0.04,
+      "total": 200
+    },
+    "ToxicChat_harmful": {
+      "detection_rate": 0.2867,
+      "asr": 0.7133,
+      "total": 300
+    },
+    "BeaverTails_harmful": {
+      "detection_rate": 0.9867,
+      "asr": 0.0133,
+      "total": 300
+    },
+    "JBB_Benign": {
+      "fpr": 0.7,
+      "total": 100
+    },
+    "Alpaca": {
+      "fpr": 0.03,
+      "total": 200
+    },
+    "ToxicChat_benign": {
+      "fpr": 0.1267,
+      "total": 300
+    },
+    "BeaverTails_benign": {
+      "fpr": 0.8867,
+      "total": 300
+    }
+  },
+  "16d_1c": {
+    "GCG": {
+      "detection_rate": 0.96,
+      "asr": 0.04,
+      "total": 100
+    },
+    "PAIR": {
+      "detection_rate": 0.8372,
+      "asr": 0.1628,
+      "total": 86
+    },
+    "JailbreakHub": {
+      "detection_rate": 0.8608,
+      "asr": 0.1392,
+      "total": 79
+    },
+    "AdvBench": {
+      "detection_rate": 0.955,
+      "asr": 0.045,
+      "total": 200
+    },
+    "HarmBench": {
+      "detection_rate": 0.94,
+      "asr": 0.06,
+      "total": 200
+    },
+    "ToxicChat_harmful": {
+      "detection_rate": 0.2033,
+      "asr": 0.7967,
+      "total": 300
+    },
+    "BeaverTails_harmful": {
+      "detection_rate": 0.9867,
+      "asr": 0.0133,
+      "total": 300
+    },
+    "JBB_Benign": {
+      "fpr": 0.59,
+      "total": 100
+    },
+    "Alpaca": {
+      "fpr": 0.015,
+      "total": 200
+    },
+    "ToxicChat_benign": {
+      "fpr": 0.06,
+      "total": 300
+    },
+    "BeaverTails_benign": {
+      "fpr": 0.8533,
+      "total": 300
+    }
+  },
+  "32d_1c": {
+    "GCG": {
+      "detection_rate": 0.96,
+      "asr": 0.04,
+      "total": 100
+    },
+    "PAIR": {
+      "detection_rate": 0.907,
+      "asr": 0.093,
+      "total": 86
+    },
+    "JailbreakHub": {
+      "detection_rate": 0.8101,
+      "asr": 0.1899,
+      "total": 79
+    },
+    "AdvBench": {
+      "detection_rate": 0.975,
+      "asr": 0.025,
+      "total": 200
+    },
+    "HarmBench": {
+      "detection_rate": 0.965,
+      "asr": 0.035,
+      "total": 200
+    },
+    "ToxicChat_harmful": {
+      "detection_rate": 0.2,
+      "asr": 0.8,
+      "total": 300
+    },
+    "BeaverTails_harmful": {
+      "detection_rate": 0.99,
+      "asr": 0.01,
+      "total": 300
+    },
+    "JBB_Benign": {
+      "fpr": 0.67,
+      "total": 100
+    },
+    "Alpaca": {
+      "fpr": 0.02,
+      "total": 200
+    },
+    "ToxicChat_benign": {
+      "fpr": 0.0933,
+      "total": 300
+    },
+    "BeaverTails_benign": {
+      "fpr": 0.8733,
+      "total": 300
+    }
+  },
+  "32d_3c": {
+    "GCG": {
+      "detection_rate": 0.92,
+      "asr": 0.08,
+      "total": 100
+    },
+    "PAIR": {
+      "detection_rate": 0.6395,
+      "asr": 0.3605,
+      "total": 86
+    },
+    "JailbreakHub": {
+      "detection_rate": 0.443,
+      "asr": 0.557,
+      "total": 79
+    },
+    "AdvBench": {
+      "detection_rate": 0.91,
+      "asr": 0.09,
+      "total": 200
+    },
+    "HarmBench": {
+      "detection_rate": 0.87,
+      "asr": 0.13,
+      "total": 200
+    },
+    "ToxicChat_harmful": {
+      "detection_rate": 0.0733,
+      "asr": 0.9267,
+      "total": 300
+    },
+    "BeaverTails_harmful": {
+      "detection_rate": 0.9333,
+      "asr": 0.0667,
+      "total": 300
+    },
+    "JBB_Benign": {
+      "fpr": 0.32,
+      "total": 100
+    },
+    "Alpaca": {
+      "fpr": 0.0,
+      "total": 200
+    },
+    "ToxicChat_benign": {
+      "fpr": 0.0167,
+      "total": 300
+    },
+    "BeaverTails_benign": {
+      "fpr": 0.7533,
+      "total": 300
+    }
+  },
+  "64d_1c": {
+    "GCG": {
+      "detection_rate": 0.97,
+      "asr": 0.03,
+      "total": 100
+    },
+    "PAIR": {
+      "detection_rate": 0.9186,
+      "asr": 0.0814,
+      "total": 86
+    },
+    "JailbreakHub": {
+      "detection_rate": 0.8734,
+      "asr": 0.1266,
+      "total": 79
+    },
+    "AdvBench": {
+      "detection_rate": 0.98,
+      "asr": 0.02,
+      "total": 200
+    },
+    "HarmBench": {
+      "detection_rate": 0.98,
+      "asr": 0.02,
+      "total": 200
+    },
+    "ToxicChat_harmful": {
+      "detection_rate": 0.2533,
+      "asr": 0.7467,
+      "total": 300
+    },
+    "BeaverTails_harmful": {
+      "detection_rate": 0.9933,
+      "asr": 0.0067,
+      "total": 300
+    },
+    "JBB_Benign": {
+      "fpr": 0.73,
+      "total": 100
+    },
+    "Alpaca": {
+      "fpr": 0.035,
+      "total": 200
+    },
+    "ToxicChat_benign": {
+      "fpr": 0.1033,
+      "total": 300
+    },
+    "BeaverTails_benign": {
+      "fpr": 0.8867,
+      "total": 300
+    }
+  },
+  "128d_1c": {
+    "GCG": {
+      "detection_rate": 0.97,
+      "asr": 0.03,
+      "total": 100
+    },
+    "PAIR": {
+      "detection_rate": 0.9186,
+      "asr": 0.0814,
+      "total": 86
+    },
+    "JailbreakHub": {
+      "detection_rate": 0.7722,
+      "asr": 0.2278,
+      "total": 79
+    },
+    "AdvBench": {
+      "detection_rate": 0.975,
+      "asr": 0.025,
+      "total": 200
+    },
+    "HarmBench": {
+      "detection_rate": 0.98,
+      "asr": 0.02,
+      "total": 200
+    },
+    "ToxicChat_harmful": {
+      "detection_rate": 0.2267,
+      "asr": 0.7733,
+      "total": 300
+    },
+    "BeaverTails_harmful": {
+      "detection_rate": 0.9967,
+      "asr": 0.0033,
+      "total": 300
+    },
+    "JBB_Benign": {
+      "fpr": 0.7,
+      "total": 100
+    },
+    "Alpaca": {
+      "fpr": 0.035,
+      "total": 200
+    },
+    "ToxicChat_benign": {
+      "fpr": 0.0867,
+      "total": 300
+    },
+    "BeaverTails_benign": {
+      "fpr": 0.89,
+      "total": 300
+    }
+  }
+}

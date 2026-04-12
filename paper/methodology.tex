@@ -1,0 +1,181 @@
+\section{方法}
+
+\subsection{威胁模型}
+
+本文考虑如下部署场景：一个大语言模型（LLM）对外提供服务（如RAG问答、对话助手或AI Agent），用户通过文本接口提交请求，LLM生成回复。前置分类器部署在用户输入与LLM之间，对每条输入进行安全判定，仅允许被判定为良性的请求进入后续的LLM推理流程。
+
+\textbf{攻击者。} 我们假设攻击者的目标是构造恶意输入文本，使其绕过前置分类器的拦截，最终到达目标LLM并诱导其生成有害内容。攻击者具备以下能力：（1）可构造任意文本输入，不受格式或长度的限制；（2）可使用自动化攻击工具，包括基于梯度优化的对抗后缀生成（如GCG~\cite{zou2023universal}）和基于LLM辅助的语义越狱生成（如PAIR~\cite{chao2023jailbreaking}）；（3）可使用人工编写的越狱模板（如JailbreakHub~\cite{shen2024anything}中收集的角色扮演、假设场景等策略）；（4）可构造语义伪装的有害请求，通过改写表述方式掩盖恶意意图。攻击者的限制在于：其对前置分类器仅有黑盒访问权限，不知晓分类器的模型参数、分类阈值和训练数据；不能修改分类器或目标LLM的权重；不能在网络层面绕过分类器直接访问LLM。
+
+\textbf{防御者。} 防御者的目标是最大化恶意输入的拦截率（Detection Rate），同时最小化对正常用户请求的误报率（False Positive Rate, FPR），以避免影响合法用户的使用体验。防御者面临以下部署约束：前置分类器的推理延迟不应超过10ms，以免显著增加系统的端到端响应时间；分类器必须能够独立部署，不依赖目标LLM的内部状态（如梯度、损失或中间层输出），从而适用于任意LLM后端；分类器的参数量和表征维度应尽可能小，以降低部署成本。
+
+\textbf{范围界定。} 本文不考虑以下威胁类型：白盒对抗攻击（即攻击者已知分类器完整参数的情形）、多轮对话中的渐进式攻击、针对模型供应链的后门攻击，以及目标LLM自身的安全对齐缺陷。这些威胁需要不同的防御机制，不属于前置分类器的设计范畴。
+
+% ───────────────────────────────────────────────
+
+\subsection{从威胁模型到方法设计：逐步推导}
+
+本节从威胁模型出发，逐步推导出本文方法的每一个设计选择，说明为什么采用"前置分类→语义嵌入→CS压缩"这一技术路线。
+
+\textbf{第一步：为什么需要前置分类器？} 威胁模型中，攻击者可向LLM发送任意文本输入，目标是诱导有害输出。最直接的防御方式是让LLM自身判断输入安全性，但这意味着每条输入都需要消耗一次完整的大模型推理（数百毫秒至数秒）。在防御者的延迟约束（$<$10ms）下，这一方案不可行。因此，我们需要一个部署在LLM之前的轻量分类器——仅对被判定为良性的输入才调用LLM推理，从而将安全检测的计算开销与LLM推理解耦。这就是前置分类器的设计动机。形式化地，该分类器定义为$f: \mathcal{T} \rightarrow \{0, 1\}$，其中$f(t) = 1$表示恶意（harmful），$f(t) = 0$表示良性（benign）。
+
+\textbf{第二步：为什么选择语义嵌入而非表面特征？} 确定了前置分类器的方案后，下一个问题是：用什么特征来区分恶意输入和良性输入？威胁模型中，攻击者具备四种攻击能力——关键词过滤可以拦截直接的有害指令，但对GCG添加的无意义对抗后缀和PAIR生成的语义伪装束手无策；基于困惑度的方法可以检测GCG后缀（因其困惑度异常高），但对人工编写的越狱模板和语义伪装完全失效（检测率0\%~\cite{alon2023detecting}）。这些方法的共同缺陷是依赖表面特征（关键词、token统计），而攻击者的核心能力恰恰是在表面特征上伪装。相比之下，无论攻击者如何伪装表述方式，其恶意意图在语义层面仍然存在——"用学术语言重写如何制造炸弹"在语义上仍然指向有害内容。因此，我们选择预训练文本嵌入模型作为特征提取器，在语义空间而非表面特征空间进行检测。同时，威胁模型的独立部署约束排除了需要访问目标LLM梯度的方法（如GradSafe~\cite{xie2024gradsafe}、Gradient Cuff~\cite{hu2024gradient}），进一步确认了基于独立嵌入模型的路线。
+
+\textbf{第三步：为什么选择压缩感知（Compressed Sensing）框架？} 选定语义嵌入路线后，最简单的方案是直接在原始高维嵌入上训练分类器（如NeMo Guard~\cite{galinkin2024improved}使用768维嵌入+随机森林）。但威胁模型的表征维度约束要求分类器尽可能轻量。我们在实验中发现了一个关键现象：恶意文本在嵌入空间中呈现显著的\textbf{低维聚集性}——其PCA有效维度仅$\sim$15维，内部平均余弦相似度高达0.62；而正常文本分布更加分散，有效维度$\sim$45维（详见表~\ref{tab:clustering}）。
+
+这一现象与压缩感知（Compressed Sensing, CS）理论~\cite{candes2006robust,donoho2006compressed}的核心假设高度吻合。经典CS理论指出：如果一个$d$维信号在某个基下是$k$-稀疏的（即仅有$k$个非零分量，$k \ll d$），那么仅需$O(k \log(d/k))$次线性测量即可精确恢复该信号。将这一理论映射到我们的场景：恶意文本的嵌入向量虽然处于768维空间中，但其判别信息集中在$\sim$15个有效维度构成的低维子空间内——这正是CS理论所要求的"稀疏性"条件。因此，从CS的视角出发，我们可以通过一个投影矩阵（类比CS中的测量矩阵）将高维嵌入压缩到远低于原始维度的空间中，而不丢失安全分类所需的判别信息。
+
+相比其他降维方法，CS框架在本场景下具有独特优势：（1）PCA等无监督方法以最大化重建方差为目标，但最大方差方向未必是安全判别的最优方向；（2）Johnson-Lindenstrauss随机投影~\cite{johnson1984extensions}可在$O(\log n / \varepsilon^2)$维空间中保持欧氏距离，但其随机性不利用信号的稀疏结构，压缩效率不如针对稀疏信号的CS；（3）CS理论天然匹配本场景的"高维空间中的低维稀疏结构"，为极致压缩（768维$\rightarrow$19维有效维度，仅2.5\%）提供了理论保障。
+
+\textbf{第四步：压缩后为什么用余弦相似度做分类？} CS框架确定了投影压缩的可行性，下一个问题是压缩后用什么度量进行分类。预训练嵌入模型（如BGE~\cite{xiao2023cpack}）在训练阶段即以余弦相似度作为对比学习的优化目标——其输出空间中，语义相似度$=$余弦相似度。恶意样本之间的高余弦相似度（0.62）和恶意与正常样本之间的低余弦相似度，正是区分两类的核心判别信号。因此，投影层在压缩的同时需要保持余弦相似度结构：通过$L_2$归一化确保投影前后的向量均位于单位超球面上，使投影空间中的内积仍为余弦相似度；通过InfoNCE对比损失在投影空间中拉近同类样本的余弦相似度、推远异类样本的余弦相似度，实现CS理论中"稀疏信号保持"的有监督版本。余弦相似度仅编码向量方向而忽略幅值，这意味着压缩后的空间只需编码方向信息，所需维度远少于需同时编码方向和幅值的欧氏空间。
+
+\textbf{总结：推导链路。} 综合以上四步，本文方法的技术路线可表述为一条从威胁模型到具体设计的因果链：
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{
+攻击者能力多样（GCG/PAIR/手动） $\xrightarrow{\text{排除表面特征}}$ 需要语义级检测 \\[4pt]
+防御者延迟约束（$<$10ms） $\xrightarrow{\text{排除LLM推理}}$ 需要前置轻量分类器 \\[4pt]
+独立部署约束 $\xrightarrow{\text{排除梯度方法}}$ 基于独立嵌入模型 \\[4pt]
+恶意嵌入低维聚集（有效维度$\sim$15） $\xrightarrow{\text{满足CS稀疏假设}}$ 压缩感知框架 \\[4pt]
+嵌入模型以余弦相似度为原生度量 $\xrightarrow{\text{保持CS结构}}$ 余弦相似度引导的投影压缩
+}}
+\end{center}
+
+整体流水线如图~\ref{fig:pipeline}所示。
+
+% TODO: 插入架构图 \begin{figure}[t] ... \end{figure}
+
+% ───────────────────────────────────────────────
+
+\subsection{嵌入编码}
+
+基于上述推导，我们选择BAAI/bge-base-en-v1.5~\cite{xiao2023cpack}作为文本编码骨干。BGE在MTEB基准上排名前列，且其预训练以余弦相似度为对比学习目标，输出空间天然以向量方向编码语义信息，与本文的CS压缩路线高度吻合。给定输入文本，编码器输出token级隐状态后，通过注意力掩码加权的Mean Pooling提取句子级表征，并进行$L_2$归一化使其落在单位超球面上：
+
+\begin{equation}
+\hat{\mathbf{e}} = \text{Norm}\left(\frac{\sum_{i=1}^{n} m_i \cdot \mathbf{h}_i}{\sum_{i=1}^{n} m_i}\right)
+\label{eq:embedding}
+\end{equation}
+
+\noindent 其中$m_i \in \{0, 1\}$为注意力掩码。归一化后，任意两个嵌入的内积即为余弦相似度：$\text{CS}(\hat{\mathbf{e}}_i, \hat{\mathbf{e}}_j) = \hat{\mathbf{e}}_i^\top \hat{\mathbf{e}}_j$。
+
+我们在AdvBench（恶意指令）和Alpaca（常规指令）上验证了恶意文本的低维聚集性假设，如表~\ref{tab:clustering}所示。
+
+\begin{table}[t]
+\centering
+\caption{恶意样本与正常样本在嵌入空间中的分布特征对比}
+\label{tab:clustering}
+\begin{tabular}{lcc}
+\toprule
+\textbf{指标} & \textbf{恶意样本} & \textbf{正常样本} \\
+\midrule
+样本内部平均CS & \textbf{0.62} & 0.55 \\
+与类质心的平均CS距离 & 0.38 & 0.45 \\
+PCA有效维度 & \textbf{$\sim$15维} & $\sim$45维 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent 该实验验证了第三步的判断：恶意文本的判别信息集中在约15个有效维度中，为后续的CS投影压缩提供了实证支持。
+
+% ───────────────────────────────────────────────
+
+\subsection{CS引导的投影压缩}
+
+基于上述观察，我们设计了以余弦相似度为优化目标的投影层，将768维嵌入压缩至128维投影空间：
+
+\begin{equation}
+\mathbf{z} = \text{Norm}\left(\mathbf{W}_2 \cdot \text{ReLU}(\mathbf{W}_1 \cdot \hat{\mathbf{e}} + \mathbf{b}_1) + \mathbf{b}_2\right)
+\label{eq:projection}
+\end{equation}
+
+\noindent 其中$\mathbf{W}_1 \in \mathbb{R}^{768 \times 768}$，$\mathbf{W}_2 \in \mathbb{R}^{768 \times 128}$。ReLU激活函数使投影层能够学习非线性的维度选择。投影前后的$L_2$归一化确保输入和输出均位于单位超球面上，使投影空间中的内积仍为余弦相似度，从而保持CS的几何结构。
+
+选择余弦相似度（而非欧氏距离或PCA方差）作为压缩目标的理由是：嵌入模型本身以CS度量语义关联，CS仅编码向量方向而忽略幅值，这意味着安全判别所需的方向信息可以用远少于欧氏空间的维度来表达。经典的Johnson-Lindenstrauss引理~\cite{johnson1984extensions}保证随机投影可在$O(\log n / \varepsilon^2)$维空间中保持欧氏距离，但其无监督性质不考虑下游任务需求；PCA优化的是重建方差而非类间分离度。本文方法通过有监督的对比学习直接优化投影空间中的类间CS分离，因此能以更少的维度实现更强的判别能力。
+
+投影层的参数量约为2.7MB，仅占BGE编码器（$\sim$436MB）的0.6\%，属于可忽略的附加开销。压缩后单个嵌入的存储从3.0KB（768维）降至512B（128维），余弦相似度计算量减少6倍。
+
+% ───────────────────────────────────────────────
+
+\subsection{训练目标}
+
+训练阶段采用三重联合损失函数，同时优化分类准确率、投影空间中的CS结构和边界样本的正确归属。训练数据包含四类标签：benign（0）、harmful（1）、gray\_benign（2）、gray\_harmful（3），其中灰色样本为语义上模糊的边界案例。
+
+\textbf{分类损失。} 将四类标签映射为二分类（$\{0,2\} \rightarrow 0$，$\{1,3\} \rightarrow 1$），以交叉熵作为分类目标：
+
+\begin{equation}
+\mathcal{L}_{\text{cls}} = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log p_i + (1 - y_i) \log(1 - p_i) \right]
+\label{eq:cls_loss}
+\end{equation}
+
+\noindent 其中$p_i = \text{Softmax}(C(\hat{\mathbf{e}}_i))_1$为分类头输出的恶意概率。
+
+\textbf{对比损失。} 在投影空间$\mathbf{z}$中采用InfoNCE~\cite{oord2018representation}损失优化CS结构。正样本集合$\mathcal{P}(i)$定义为与样本$i$同属一大类的所有其他样本（benign与gray\_benign同类，harmful与gray\_harmful同类）：
+
+\begin{equation}
+\mathcal{L}_{\text{con}} = -\frac{1}{N} \sum_{i=1}^{N} \frac{1}{|\mathcal{P}(i)|} \sum_{j \in \mathcal{P}(i)} \log \frac{\exp(\mathbf{z}_i^\top \mathbf{z}_j / \tau)}{\sum_{k \neq i} \exp(\mathbf{z}_i^\top \mathbf{z}_k / \tau)}
+\label{eq:con_loss}
+\end{equation}
+
+\noindent 其中温度$\tau = 0.07$。由于$\mathbf{z}$已$L_2$归一化，$\mathbf{z}_i^\top \mathbf{z}_j$即为投影空间中的余弦相似度。该损失促使同类样本在CS意义上更相近、异类样本更疏远，从而引导编码器学习到更具判别性的嵌入表征。
+
+\textbf{边界损失。} 针对灰色区域样本，以间隔约束确保其在嵌入空间中被归到正确一侧。定义批次内的类中心$\mathbf{c}_{\text{benign}}$和$\mathbf{c}_{\text{harmful}}$，对灰色样本施加CS间隔约束：
+
+\begin{equation}
+\mathcal{L}_{\text{margin}} = \frac{1}{|\mathcal{G}|} \sum_{i \in \mathcal{G}} \max\left(0,\ \text{CS}(\hat{\mathbf{e}}_i, \mathbf{c}_{\text{wrong}}) - \text{CS}(\hat{\mathbf{e}}_i, \mathbf{c}_{\text{correct}}) + m\right)
+\label{eq:margin_loss}
+\end{equation}
+
+\noindent 其中$m = 0.3$为间隔超参数。该损失确保gray\_benign样本与良性中心的CS至少比与恶意中心高出$m$，反之亦然。
+
+\textbf{总损失函数。} 三项损失按以下权重加权组合：
+
+\begin{equation}
+\mathcal{L} = \lambda_{\text{cls}} \cdot \mathcal{L}_{\text{cls}} + \lambda_{\text{con}} \cdot \mathcal{L}_{\text{con}} + \lambda_{\text{margin}} \cdot \mathcal{L}_{\text{margin}}
+\label{eq:total_loss}
+\end{equation}
+
+\noindent 其中$\lambda_{\text{cls}} = 1.0$，$\lambda_{\text{con}} = 0.5$，$\lambda_{\text{margin}} = 0.3$。三者的协同作用为：分类损失提供直接的判别监督；对比损失在投影空间中塑造CS结构，使编码器输出更具类间分离度的嵌入；边界损失处理决策边界附近的模糊样本，提升边界区域的鲁棒性。
+
+% ───────────────────────────────────────────────
+
+\subsection{训练策略与数据}
+
+\textbf{渐进式解冻。} 由于编码器骨干包含大量预训练参数，直接端到端微调易导致灾难性遗忘。本文采用渐进式解冻策略分三阶段释放模型容量，如表~\ref{tab:unfreezing}所示。
+
+\begin{table}[t]
+\centering
+\caption{渐进式解冻训练策略}
+\label{tab:unfreezing}
+\begin{tabular}{clll}
+\toprule
+\textbf{阶段} & \textbf{Epoch} & \textbf{可训练模块} & \textbf{目的} \\
+\midrule
+1 & 1--5 & 投影头 + 分类头 & 学习安全判别映射 \\
+2 & 6--10 & 上述 + 编码器后6层 & 微调高层语义表征 \\
+3 & 11--15 & 全部参数 & 端到端精调 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+训练采用AdamW优化器（$lr = 2 \times 10^{-5}$，weight\_decay $= 0.01$），线性warmup（前10\%步数）后线性衰减，梯度裁剪范数1.0，批大小16。每100步进行验证评估，以高置信度准确率作为模型选择标准。
+
+\textbf{训练数据。} 共5,643条样本（训练集5,079 / 验证集564），按四类标签组织，如表~\ref{tab:training_data}所示。
+
+\begin{table}[t]
+\centering
+\caption{训练数据构成}
+\label{tab:training_data}
+\begin{tabular}{lrl}
+\toprule
+\textbf{类别} & \textbf{样本量} & \textbf{来源} \\
+\midrule
+harmful & 2,000 & HarmBench, JailbreakHub, JailbreakBench, BeaverTails \\
+benign & 2,943 & Alpaca, Dolly, DailyDialog, Everyday-Conv, WildChat \\
+gray\_benign & 400 & 人工标注边界良性样本 \\
+gray\_harmful & 300 & 人工标注边界恶意样本 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+恶意样本覆盖直接有害指令、越狱模板、自动生成攻击等多种类型；良性样本来自多个常规对话数据集，确保对正常请求的容忍度。训练时使用WeightedRandomSampler均衡采样以消除类别不平衡影响。
+
+\textbf{推理。} 推理阶段仅需编码器和分类头的前向传播。投影层仅在训练阶段用于对比学习，推理时不参与计算，因此额外开销仅为分类头的一次线性变换（$768 \rightarrow 2$）。单条文本端到端推理延迟在CPU上低于10ms。

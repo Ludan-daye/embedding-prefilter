@@ -15,5 +15,8 @@ __pycache__/
 venv/
 .venv/
 
+# Embedding caches (large, regeneratable)
+models/v8_cs_supcon/cache/
+
 # OS
 .DS_Store

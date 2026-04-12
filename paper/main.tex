@@ -1,0 +1,255 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{ctex}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+
+\begin{document}
+
+\title{基于压缩感知的嵌入空间前置分类器：面向大语言模型的轻量安全防护}
+
+\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
+\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
+\textit{name of organization (of Aff.)}\\
+City, Country \\
+email address or ORCID}
+}
+
+\maketitle
+
+\begin{abstract}
+随着大语言模型（LLM）在 RAG 系统、对话机器人、AI Agent 等场景中的广泛部署，针对 LLM 的对抗攻击——包括越狱提示、有害指令注入和提示词攻击——在数量和复杂度上持续增长。为了在保障安全性的同时节省大模型推理算力，轻量级前置分类器作为第一道防线受到广泛关注，其核心思路是在恶意输入到达 LLM 之前将其拦截。现有方法如 Meta 的 PromptGuard（86M 参数微调 mDeBERTa）、NVIDIA 的 NeMo Guard（768 维嵌入 + 随机森林）、InjecGuard（184M 参数 DeBERTa）等，具备模型规模小、易于部署的优势。然而，这些方法存在显著缺陷：PromptGuard 在分布外数据上严重退化（F1 从 0.997 骤降至 0.303）；NeMo Guard 依赖 768 维高维嵌入，存储与计算开销大；Gradient Cuff（NeurIPS 2024）和 GradSafe（ACL 2024）等基于梯度的方法需要访问目标 LLM 内部状态，无法独立部署；困惑度过滤器对人工编写的语义越狱攻击检测率为 0\%。此外，现有轻量方法均未在 AdvBench、HarmBench 等标准有害指令基准上进行评测，在直接有害请求检测方面存在评测空白。
+
+针对上述问题，本文提出一种基于压缩感知（Compressed Sensing）思想的嵌入压缩前置分类器。我们观察到恶意文本在嵌入空间中呈现显著的低维聚集性（内部平均余弦相似度达 0.62，PCA 有效维度仅$\sim$15），满足压缩感知理论的稀疏性假设。基于这一观察，我们通过有监督投影层将高维嵌入映射到低维空间，投影前后均进行 L2 归一化以保持余弦相似度的几何结构，并以 InfoNCE 对比损失在投影空间中优化类间分离度，从而实现从 384 维到 19 维（5\% 压缩率）的极致压缩。最终结合分类头与三重损失函数（分类损失 + InfoNCE 对比损失 + 边界损失）进行端到端训练。我们在涵盖 6 类攻击和 4 类良性数据的 11 个基准数据集上进行了全面评测。本方法在 AdvBench 上检测率达 85.0\%、HarmBench 达 82.0\%——这是轻量前置分类器中首次报告的结果；BeaverTails 检测率达 85.3\%，GCG 梯度攻击检测率达 84.0\%；Alpaca 常规指令误报率仅 1.5\%，ToxicChat 真实对话误报率仅 5.0\%，推理延迟低于 10ms。与现有方法相比，本方法实现了所有轻量前置分类器中最小的表征维度（19 维，NeMo 为 768 维，PromptGuard 需 86M 全模型推理），最低的常规输入误报率（Alpaca FPR = 1.5\%，仅为 PromptGuard 的 1/34），且无需访问目标 LLM，可作为即插即用的安全模块独立部署于任意 LLM 应用之前。
+\end{abstract}
+
+\begin{IEEEkeywords}
+大语言模型安全；压缩感知；Embedding 语义表征；前置分类器；越狱攻击检测；对比学习；低维投影
+\end{IEEEkeywords}
+
+% ═══════════════════════════════════════════════
+\section{引言}
+% TODO: 待撰写
+% ═══════════════════════════════════════════════
+
+% ═══════════════════════════════════════════════
+\section{相关工作}
+
+\subsection{LLM 安全前置分类器}
+
+随着大语言模型在生产环境中的广泛部署，恶意输入检测已成为保障系统安全的关键环节。前置分类器作为部署在 LLM 推理之前的轻量安全模块，旨在以极低的计算开销拦截越狱提示、有害指令和提示注入等攻击，从而避免对每条输入都消耗高昂的大模型推理资源。
+
+基于微调 Transformer 的方法是当前前置分类器的主流路线。Meta 提出的 PromptGuard \cite{b1} 在 mDeBERTa-v3-base（86M 参数）上进行微调，在内分布测试中取得了 AUC = 0.997 的优异表现；然而，独立评测表明其在分布外数据上性能急剧退化——在 JailbreakHub 数据集上 F1 仅为 0.303，误报率高达 50.7\% \cite{b2}，且存在 99.8\% 的白字符间距绕过漏洞。其后续版本 PromptGuard 2 \cite{b3} 引入能量损失函数和对抗分词修复，将 Recall@1\%FPR 提升至 97.5\%，但推理延迟增至 92.4ms。InjecGuard \cite{b4} 在 DeBERTa-v3-base（184M 参数）的基础上，通过构建 NotInject 训练数据缓解了过度防御问题，平均准确率达 83.5\%，但其 184M 的参数规模仍然带来较大的部署成本。ProtectAI DeBERTa-v2 在内分布评测中 F1 达 0.955，但在对抗扰动下绕过率高达 67.9\% \cite{b4}。总体而言，微调 Transformer 方法依赖完整模型推理，参数量通常在 22M--184M 之间，且对分布外数据和对抗攻击的鲁棒性不足。
+
+基于目标 LLM 内部信号的方法利用大模型自身的梯度或损失信息进行检测。GradSafe \cite{b5}（ACL 2024）计算目标 LLM 对合规回复"Sure."的梯度，通过与安全样本梯度的余弦相似度实现零样本越狱检测，在 XSTest 上取得 F1 = 0.900；但该方法对 SAA、DrAttack 等新型攻击完全失效 \cite{b6}。Gradient Cuff \cite{b7}（NeurIPS 2024）通过分析拒绝损失景观和梯度范数实现两步检测，在 SoK 统一评测中取得了轻量方法中最低的平均 ASR = 0.148 \cite{b8}，其中 GCG 攻击的 ASR 低至 1.2\%。然而，此类方法的根本局限在于必须访问目标 LLM 的内部状态（梯度或损失），无法作为独立模块部署在任意 LLM 之前。
+
+基于统计特征的方法试图利用文本表面特征进行快速检测。Alon 和 Kamfonas \cite{b9} 提出基于 GPT-2 困惑度的检测方法，利用 GCG 等梯度优化攻击产生的异常高困惑度（$>$1000）进行识别，对机器生成攻击的检测率达 96.2\%。然而，该方法对人工编写的语义越狱攻击检测率为 0\%，在 SoK 统一评测中平均 ASR 为 0.239，几乎等同于无防御 \cite{b8}。这表明基于表面统计特征的方法无法应对语义层面的对抗攻击。
+
+上述方法或依赖大规模 Transformer 推理、或依赖目标 LLM 梯度、或仅对特定攻击类型有效，且均未在 AdvBench、HarmBench 等标准有害指令基准上进行系统评测。本文旨在探索一种基于嵌入压缩的轻量路径，以更小的表征维度和更低的推理延迟实现对多类型攻击的有效检测。
+
+\subsection{文本嵌入在安全检测中的应用}
+
+预训练文本嵌入模型（如 BGE \cite{b10}、Snowflake Arctic Embed \cite{b11}、Sentence-BERT \cite{b12}）将文本映射到连续向量空间，使语义相关的文本具有较高的余弦相似度。近年来，研究者开始探索利用嵌入空间的几何性质进行安全检测。
+
+Galinkin 和 Sablotny \cite{b2} 提出 NeMo Guard JailbreakDetect，使用 Snowflake Arctic Embed M Long 模型提取 768 维嵌入，然后以随机森林分类器进行越狱检测，在 JailbreakHub 上取得 F1 = 0.960 的优异表现。该工作证明了预训练嵌入本身包含丰富的安全判别信息，即使不微调嵌入模型，仅在嵌入之上训练传统机器学习分类器也能取得高性能。Ayub 和 Majumdar \cite{b13} 进一步验证了这一发现，在 OpenAI、GTE、MiniLM 等多种嵌入模型上训练逻辑回归、XGBoost 和随机森林分类器用于提示注入检测，最优 F1 达 0.867。
+
+然而，现有基于嵌入的方法直接使用原始高维嵌入（768 维或更高）作为分类特征，带来两方面问题：一是存储开销大，每个样本需要存储 768 $\times$ 4 = 3KB 的浮点向量，规模化部署时质心库和缓存的内存需求显著；二是高维空间中存在大量与安全判别无关的冗余维度。我们的实验观察表明，恶意文本在嵌入空间中呈现显著的低维聚集性——其 PCA 有效维度仅约 15 维，内部平均余弦相似度达 0.62，显著高于正常文本的 0.55（有效维度约 45 维）。这意味着安全判别信息集中在一个远低于原始维度的子空间中，为有监督的嵌入压缩提供了理论依据。
+
+\subsection{压缩感知与嵌入空间降维}
+
+压缩感知（Compressed Sensing, CS）理论 \cite{b15,b16} 指出，如果一个$d$维信号在某个基下是$k$-稀疏的（$k \ll d$），那么仅需$O(k \log(d/k))$次线性测量即可精确恢复该信号。这一理论为高维数据的极致压缩提供了数学基础。在嵌入空间中，恶意文本的低维聚集性（有效维度$\sim$15）天然满足CS的稀疏性假设，意味着安全判别信息可以通过远少于原始维度的投影测量来捕获。
+
+余弦相似度是文本嵌入模型的核心度量方式。主流嵌入模型（BGE、GTE、E5 等）在训练阶段即以余弦相似度作为对比学习的优化目标，使得模型输出空间中的方向信息承载了主要的语义判别能力，而向量幅值的影响被 L2 归一化消除 \cite{b10}。
+
+在嵌入降维领域，经典的 Johnson-Lindenstrauss 引理 \cite{b14} 证明了高维空间中的点集可以通过随机投影映射到 $O(\log n / \varepsilon^2)$ 维空间，同时保持任意两点间的欧氏距离在 $(1\pm\varepsilon)$ 倍范围内。然而，随机投影是无监督的，不考虑下游任务的判别需求，且保持的是欧氏距离而非嵌入模型原生的余弦相似度结构。PCA 等线性降维方法虽然可以捕获主要方差方向，但其优化目标是最大化重建方差，而非保持类间的余弦相似度差异。
+
+本文将压缩感知的稀疏性理论与余弦相似度保持相结合：利用恶意嵌入的低维稀疏结构实现极致压缩，同时通过有监督的对比学习在投影空间中保持并增强余弦相似度的类间分离度，在 19 维（仅为原始 384 维的 5\%）中保留安全相关的方向判别能力。
+
+% ═══════════════════════════════════════════════
+\section{方法}
+
+\subsection{威胁模型}
+
+本文考虑如下部署场景：一个大语言模型（LLM）对外提供服务（如RAG问答、对话助手或AI Agent），用户通过文本接口提交请求，LLM生成回复。前置分类器部署在用户输入与LLM之间，对每条输入进行安全判定，仅允许被判定为良性的请求进入后续的LLM推理流程。
+
+\textbf{攻击者。} 我们假设攻击者的目标是构造恶意输入文本，使其绕过前置分类器的拦截，最终到达目标LLM并诱导其生成有害内容。攻击者具备以下能力：（1）可构造任意文本输入，不受格式或长度的限制；（2）可使用自动化攻击工具，包括基于梯度优化的对抗后缀生成（如GCG）和基于LLM辅助的语义越狱生成（如PAIR）；（3）可使用人工编写的越狱模板（如JailbreakHub中收集的角色扮演、假设场景等策略）；（4）可构造语义伪装的有害请求，通过改写表述方式掩盖恶意意图。攻击者的限制在于：其对前置分类器仅有黑盒访问权限，不知晓分类器的模型参数、分类阈值和训练数据；不能修改分类器或目标LLM的权重；不能在网络层面绕过分类器直接访问LLM。
+
+\textbf{防御者。} 防御者的目标是最大化恶意输入的拦截率（Detection Rate），同时最小化对正常用户请求的误报率（False Positive Rate, FPR），以避免影响合法用户的使用体验。防御者面临以下部署约束：前置分类器的推理延迟不应超过10ms，以免显著增加系统的端到端响应时间；分类器必须能够独立部署，不依赖目标LLM的内部状态（如梯度、损失或中间层输出），从而适用于任意LLM后端；分类器的参数量和表征维度应尽可能小，以降低部署成本。
+
+\textbf{范围界定。} 本文不考虑以下威胁类型：白盒对抗攻击（即攻击者已知分类器完整参数的情形）、多轮对话中的渐进式攻击、针对模型供应链的后门攻击，以及目标LLM自身的安全对齐缺陷。这些威胁需要不同的防御机制，不属于前置分类器的设计范畴。
+
+\subsection{方法总览}
+
+本文提出一种基于压缩感知（Compressed Sensing）思想的嵌入空间前置分类器，其整体流水线如图~\ref{fig:pipeline}所示。给定用户输入文本$t$，系统依次执行三个阶段：（1）\textbf{嵌入编码}——预训练文本嵌入模型将$t$编码为高维语义向量$\hat{\mathbf{e}} \in \mathbb{R}^{768}$；（2）\textbf{压缩感知投影}——有监督投影层将$\hat{\mathbf{e}}$压缩至低维表征$\mathbf{z} \in \mathbb{R}^{128}$，该投影在训练阶段通过对比学习优化余弦相似度结构；（3）\textbf{安全分类}——分类头基于$\hat{\mathbf{e}}$输出恶意概率$p$，阈值判定$p > \theta$则拦截，否则放行至LLM。
+
+% TODO: 插入架构图
+% \begin{figure}[t]
+% \centering
+% \includegraphics[width=\columnwidth]{figures/pipeline.pdf}
+% \caption{方法整体架构。输入文本经嵌入编码器提取语义向量后，投影层在训练阶段通过InfoNCE对比损失塑造余弦相似度空间结构（虚线部分），分类头输出恶意概率。推理时仅需编码器和分类头（实线部分），投影层不参与计算。}
+% \label{fig:pipeline}
+% \end{figure}
+
+该方法的核心思想源于一个实验观察：恶意文本在嵌入空间中呈现显著的低维聚集性（PCA有效维度仅$\sim$15），满足压缩感知理论的稀疏性假设。这意味着安全判别信息可以通过远少于原始维度的投影测量来捕获。投影层类比压缩感知中的测量矩阵，但通过有监督训练（而非随机构造）自适应地学习安全判别方向；压缩后在余弦相似度空间中进行分类，与嵌入模型的原生语义度量保持一致。
+
+\subsection{嵌入编码器}
+
+攻击者的多种攻击手段（GCG对抗后缀、PAIR语义伪装、手动越狱模板）均可在表面特征上伪装，但恶意意图在语义层面仍然存在。因此，我们选择预训练文本嵌入模型在语义空间进行检测，而非依赖关键词或困惑度等表面特征。同时，威胁模型的独立部署约束排除了需要访问目标LLM梯度的方法（如GradSafe \cite{b5}、Gradient Cuff \cite{b7}），确认了基于独立嵌入模型的路线。
+
+具体地，我们选择BAAI/bge-base-en-v1.5 \cite{b10} 作为编码骨干。BGE在MTEB基准上排名前列，且其预训练以余弦相似度为对比学习目标，输出空间天然以向量方向编码语义信息。给定输入文本，编码器输出token级隐状态后，通过注意力掩码加权的Mean Pooling提取句子级表征，并进行$L_2$归一化：
+
+\begin{equation}
+\hat{\mathbf{e}} = \text{Norm}\left(\frac{\sum_{i=1}^{n} m_i \cdot \mathbf{h}_i}{\sum_{i=1}^{n} m_i}\right)
+\label{eq:embedding}
+\end{equation}
+
+\noindent 归一化后，$\hat{\mathbf{e}}$位于单位超球面上，任意两个嵌入的内积即为余弦相似度。我们在AdvBench和Alpaca上验证了恶意文本的低维聚集性，如表~\ref{tab:clustering}所示。
+
+\begin{table}[t]
+\centering
+\caption{恶意样本与正常样本在嵌入空间中的分布特征对比}
+\label{tab:clustering}
+\begin{tabular}{lcc}
+\toprule
+\textbf{指标} & \textbf{恶意样本} & \textbf{正常样本} \\
+\midrule
+样本内部平均余弦相似度 & \textbf{0.62} & 0.55 \\
+与类质心的平均距离 & 0.38 & 0.45 \\
+PCA有效维度 & \textbf{$\sim$15维} & $\sim$45维 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+恶意文本围绕有限主题、使用相似句式，语义高度集中（有效维度仅$\sim$15）；正常文本覆盖广泛话题，语义分散（有效维度$\sim$45）。这一低维聚集性为下一步的压缩感知投影提供了稀疏性前提。
+
+\subsection{压缩感知引导的投影层}
+
+压缩感知（CS）理论 \cite{b15,b16} 指出：如果$d$维信号在某个基下是$k$-稀疏的（$k \ll d$），仅需$O(k \log(d/k))$次线性测量即可精确恢复。恶意嵌入的有效维度$\sim$15满足这一稀疏条件，意味着768维嵌入中的安全判别信息可以通过极少的投影维度来捕获。相比PCA（优化重建方差而非判别）和Johnson-Lindenstrauss随机投影 \cite{b14}（不利用稀疏结构），CS框架天然匹配"高维空间中的低维稀疏结构"，为极致压缩提供了理论保障。
+
+基于此，我们设计了有监督的投影层，将768维嵌入压缩至128维：
+
+\begin{equation}
+\mathbf{z} = \text{Norm}\left(\mathbf{W}_2 \cdot \text{ReLU}(\mathbf{W}_1 \cdot \hat{\mathbf{e}} + \mathbf{b}_1) + \mathbf{b}_2\right)
+\label{eq:projection}
+\end{equation}
+
+\noindent 其中$\mathbf{W}_1 \in \mathbb{R}^{768 \times 768}$，$\mathbf{W}_2 \in \mathbb{R}^{768 \times 128}$。与经典CS的随机测量矩阵不同，本文的投影矩阵通过对比学习训练得到，能够自适应地捕获安全判别所需的稀疏方向。ReLU引入非线性维度选择能力。投影前后的$L_2$归一化确保输入输出均位于单位超球面上，使投影空间中的内积仍为余弦相似度——这与嵌入模型的原生语义度量保持一致，使得压缩后仍可用余弦相似度进行有效分类。
+
+投影层参数量约2.7MB，仅占编码器的0.6\%。压缩后单个嵌入存储从3.0KB降至512B，计算量减少6倍。
+
+\subsection{训练目标}
+
+训练阶段采用三重联合损失函数。训练数据包含四类标签：benign（0）、harmful（1）、gray\_benign（2）、gray\_harmful（3），其中灰色样本为语义边界案例。
+
+\textbf{分类损失。} 四类映射为二分类（$\{0,2\} \rightarrow 0$，$\{1,3\} \rightarrow 1$），以交叉熵为目标：
+
+\begin{equation}
+\mathcal{L}_{\text{cls}} = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log p_i + (1 - y_i) \log(1 - p_i) \right]
+\label{eq:cls_loss}
+\end{equation}
+
+\noindent 其中$p_i = \text{Softmax}(C(\hat{\mathbf{e}}_i))_1$为分类头输出的恶意概率。
+
+\textbf{对比损失。} 在投影空间$\mathbf{z}$中采用InfoNCE \cite{b17} 优化余弦相似度结构，正样本$\mathcal{P}(i)$为同大类的所有其他样本：
+
+\begin{equation}
+\mathcal{L}_{\text{con}} = -\frac{1}{N} \sum_{i=1}^{N} \frac{1}{|\mathcal{P}(i)|} \sum_{j \in \mathcal{P}(i)} \log \frac{\exp(\mathbf{z}_i^\top \mathbf{z}_j / \tau)}{\sum_{k \neq i} \exp(\mathbf{z}_i^\top \mathbf{z}_k / \tau)}
+\label{eq:con_loss}
+\end{equation}
+
+\noindent 温度$\tau = 0.07$。该损失促使投影层学习保持并增强类间余弦相似度差异的低维映射。
+
+\textbf{边界损失。} 对灰色样本施加余弦相似度间隔约束，确保其归到正确类侧：
+
+\begin{equation}
+\mathcal{L}_{\text{margin}} = \frac{1}{|\mathcal{G}|} \sum_{i \in \mathcal{G}} \max\left(0,\ s_{\text{wrong}}^i - s_{\text{correct}}^i + m\right)
+\label{eq:margin_loss}
+\end{equation}
+
+\noindent 其中$m = 0.3$，$s^i$为样本与对应类中心的余弦相似度。
+
+\textbf{总损失：}
+
+\begin{equation}
+\mathcal{L} = 1.0 \cdot \mathcal{L}_{\text{cls}} + 0.5 \cdot \mathcal{L}_{\text{con}} + 0.3 \cdot \mathcal{L}_{\text{margin}}
+\label{eq:total_loss}
+\end{equation}
+
+三者协同：分类损失提供判别监督，对比损失塑造投影空间的余弦相似度结构使编码器输出更具分离度，边界损失提升决策边界鲁棒性。
+
+\subsection{训练与推理}
+
+\textbf{渐进式解冻。} 为避免灾难性遗忘，分三阶段逐步释放模型容量（表~\ref{tab:unfreezing}）。
+
+\begin{table}[t]
+\centering
+\caption{渐进式解冻训练策略}
+\label{tab:unfreezing}
+\begin{tabular}{clll}
+\toprule
+\textbf{阶段} & \textbf{Epoch} & \textbf{可训练模块} & \textbf{目的} \\
+\midrule
+1 & 1--5 & 投影头 + 分类头 & 学习安全判别映射 \\
+2 & 6--10 & 上述 + 编码器后6层 & 微调高层表征 \\
+3 & 11--15 & 全部参数 & 端到端精调 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+优化器为AdamW（$lr = 2 \times 10^{-5}$，weight\_decay $= 0.01$），线性warmup后线性衰减，梯度裁剪1.0，批大小16。
+
+\textbf{训练数据。} 共5,643条（表~\ref{tab:training_data}），使用WeightedRandomSampler均衡采样。
+
+\begin{table}[t]
+\centering
+\caption{训练数据构成}
+\label{tab:training_data}
+\begin{tabular}{lrl}
+\toprule
+\textbf{类别} & \textbf{样本量} & \textbf{来源} \\
+\midrule
+harmful & 2,000 & HarmBench, JailbreakHub, JBB, BeaverTails \\
+benign & 2,943 & Alpaca, Dolly, DailyDialog, WildChat \\
+gray\_benign & 400 & 人工标注边界良性样本 \\
+gray\_harmful & 300 & 人工标注边界恶意样本 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{推理。} 推理时仅需编码器和分类头的前向传播（图~\ref{fig:pipeline}实线部分）。投影层仅在训练阶段通过对比学习塑造嵌入空间结构，推理时不参与计算，额外开销仅为$768 \rightarrow 2$的线性变换。单条文本端到端推理延迟在CPU上低于10ms。
+
+% ═══════════════════════════════════════════════
+\section{实验}
+% TODO: 待撰写
+
+% ═══════════════════════════════════════════════
+\section{结论}
+% TODO: 待撰写
+
+% ═══════════════════════════════════════════════
+\begin{thebibliography}{00}
+\bibitem{b1} Meta. Prompt-Guard-86M Model Card, PurpleLlama, 2024.
+\bibitem{b2} E. Galinkin and M. Sablotny, ``Improved large language model jailbreak detection via pretrained embeddings,'' in \textit{Proc. AICS}, 2025. arXiv:2412.01547.
+\bibitem{b3} Meta, ``LlamaFirewall: An open source guardrail system for building secure AI agents,'' arXiv:2505.03574, 2025.
+\bibitem{b4} InjecGuard, ``Benchmarking and mitigating over-defense in prompt injection guardrail models,'' arXiv:2410.22770, 2024.
+\bibitem{b5} Z. Xie et al., ``GradSafe: Detecting jailbreak prompts for LLMs via safety-critical gradient analysis,'' in \textit{Proc. ACL}, 2024. arXiv:2402.13494.
+\bibitem{b6} JBShield, ``Defending large language models from jailbreak attacks through activated concept analysis and manipulation,'' in \textit{Proc. USENIX Security}, 2025.
+\bibitem{b7} X. Hu, H. Chen, and T.-Y. Ho, ``Gradient Cuff: Detecting jailbreak attacks on LLMs by exploring refusal loss landscapes,'' in \textit{Proc. NeurIPS}, 2024. arXiv:2403.00867.
+\bibitem{b8} ``SoK: Evaluating jailbreak guardrails in large language models,'' arXiv:2506.10597, 2025.
+\bibitem{b9} G. Alon and M. Kamfonas, ``Detecting language model attacks with perplexity,'' arXiv:2308.14132, 2023.
+\bibitem{b10} S. Xiao et al., ``C-Pack: Packaged resources to advance general Chinese embedding,'' arXiv:2309.07597, 2023.
+\bibitem{b11} L. Merrick et al., ``Arctic-Embed: Scalable, efficient, and accurate text embedding models,'' arXiv:2405.05374, 2024.
+\bibitem{b12} N. Reimers and I. Gurevych, ``Sentence-BERT: Sentence embeddings using Siamese BERT-networks,'' in \textit{Proc. EMNLP}, 2019.
+\bibitem{b13} R. Ayub and S. Majumdar, ``Embedding-based classifiers can detect prompt injection attacks,'' arXiv:2410.22284, 2024.
+\bibitem{b14} W. Johnson and J. Lindenstrauss, ``Extensions of Lipschitz mappings into a Hilbert space,'' in \textit{Contemporary Mathematics}, vol. 26, 1984.
+\bibitem{b15} E. Cand\`{e}s, J. Romberg, and T. Tao, ``Robust uncertainty principles: Exact signal reconstruction from highly incomplete frequency information,'' \textit{IEEE Trans. Inform. Theory}, vol. 52, no. 2, pp. 489--509, 2006.
+\bibitem{b16} D. Donoho, ``Compressed sensing,'' \textit{IEEE Trans. Inform. Theory}, vol. 52, no. 4, pp. 1289--1306, 2006.
+\bibitem{b17} A. van den Oord, Y. Li, and O. Vinyals, ``Representation learning with contrastive predictive coding,'' arXiv:1807.03748, 2018.
+\end{thebibliography}
+
+\end{document}
