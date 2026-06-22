@@ -1,0 +1,53 @@
+{
+  "method": "tfidf_lr",
+  "params": "~5K",
+  "dim": "-",
+  "note": "",
+  "datasets": {
+    "GCG": {
+      "detection_rate": 0.54,
+      "total": 100
+    },
+    "PAIR": {
+      "detection_rate": 0.3256,
+      "total": 86
+    },
+    "JailbreakHub": {
+      "detection_rate": 0.4051,
+      "total": 79
+    },
+    "AdvBench": {
+      "detection_rate": 0.33,
+      "total": 200
+    },
+    "HarmBench": {
+      "detection_rate": 0.675,
+      "total": 200
+    },
+    "ToxicChat_harmful": {
+      "detection_rate": 0.2067,
+      "total": 300
+    },
+    "BeaverTails_harmful": {
+      "detection_rate": 0.7667,
+      "total": 300
+    },
+    "JBB_Benign": {
+      "fpr": 0.21,
+      "total": 100
+    },
+    "Alpaca": {
+      "fpr": 0.015,
+      "total": 200
+    },
+    "ToxicChat_benign": {
+      "fpr": 0.13,
+      "total": 300
+    },
+    "BeaverTails_benign": {
+      "fpr": 0.67,
+      "total": 300
+    }
+  },
+  "latency_ms_per_sample": 0.068
+}
