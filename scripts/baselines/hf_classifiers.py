@@ -8,8 +8,9 @@ _DEV = "cuda" if torch.cuda.is_available() else "cpu"
 
 class _SeqClf:
     def __init__(self, model_id, harmful_label_ids, max_len=512):
-        self.tok = AutoTokenizer.from_pretrained(model_id)
-        self.m = AutoModelForSequenceClassification.from_pretrained(model_id).to(_DEV).eval()
+        self.tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        self.m = AutoModelForSequenceClassification.from_pretrained(
+            model_id, trust_remote_code=True).to(_DEV).eval()
         self.harmful = set(harmful_label_ids)
         self.max_len = max_len
         print(f"  {model_id} id2label={self.m.config.id2label}")
