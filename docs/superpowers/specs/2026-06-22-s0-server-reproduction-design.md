@@ -31,8 +31,8 @@ S0 不追求改进任何指标，只追求「跑通 + 复现 + 如实记录」�
 
 **In scope**
 - 服务器工作区 + conda 环境搭建（独立环境，不污染现有 env）。
-- 拿到/重训 v7、v8 权重。
-- 复现 v8（及 v7）在 11 个数据集上的检测率 / FPR / AUC。
+- 拿到/重训 **v8** 权重（本轮**只做 v8**，不碰 v7——用户 2026-06-22 确认聚焦 v8）。
+- 复现 **v8** 在 11 个数据集上的检测率 / FPR / AUC。
 - 复现报告：claimed vs measured，逐项标注差异，尤其**核验** JBB-Benign / BeaverTails-benign 的真实 FPR、确认维度错标。
 - 轻量工程修复：`detect.py`（或新入口）指向真实 v8 模型；延迟基准脚本。
 
@@ -49,15 +49,15 @@ S0 不追求改进任何指标，只追求「跑通 + 复现 + 如实记录」�
 
 ## 5. 权重策略
 
-1. 先用 `huggingface_hub` 从 `ludandaye/embedding-prefilter` 尝试下载 v7/v8 权重（投影 `.pt` + 分类头）。
-2. 若 HF 上缺失或不全 → 在 A100 上用 `scripts/v8_cs_supcon/train.py`（及 v7 `scripts/v7_classifier/train.py`）**重训**；有训练脚本 + `datasets/` + `embedding_db/` 缓存，重训也更符合「可复现」目标。
+1. 先用 `huggingface_hub` 从 `ludandaye/embedding-prefilter` 尝试下载 **v8** 投影矩阵 `.pt`（检测器质心/阈值 `.npz` 已在仓库）。
+2. 若 HF 上缺失或不全 → 在 A100 上用 `scripts/v8_cs_supcon/train.py` **重训** v8；有训练脚本 + `datasets/` + `embedding_db/` 缓存，重训也更符合「可复现」目标。
 3. 报告中明确记录：用的是 **HF 下载权重** 还是 **重训权重**（直接影响复现结果的解读）。
 
 ## 6. 执行阶段
 
 - **Phase A — 落地**：clone 仓库到服务器 → 建环境 → 装依赖 → 验证 `import torch, sentence_transformers` 通过、GPU 可见。
-- **Phase B — 权重**：按第 5 节拿到 v7/v8 权重，记录来源。
-- **Phase C — 复现**：跑 v8 评估覆盖 11 数据集（AdvBench/HarmBench/GCG/PAIR/BeaverTails/JailbreakBench/JailbreakHub/Alpaca/ToxicChat/MaliciousInstruct/JBB-Benign），收集 DR/FPR/AUC；同样跑 v7。
+- **Phase B — 权重**：按第 5 节拿到 v8 权重，记录来源。
+- **Phase C — 复现**：跑 **v8** 评估覆盖 11 数据集（AdvBench/HarmBench/GCG/PAIR/BeaverTails/JailbreakBench/JailbreakHub/Alpaca/ToxicChat/MaliciousInstruct/JBB-Benign），收集 DR/FPR/AUC。
 - **Phase D — 报告**：写 `results/REPRODUCTION_S0.md`——每数据集 claimed vs measured，标注差异；明确量化 FPR 弱点与维度错标。
 - **Phase E — 工程修复（轻量）**：`detect.py`（或新增 `run_detect.py`）指向真实 v8 模型；写 `scripts/bench_latency.py` 实测单条/批量延迟，核验「<10ms」。
 
