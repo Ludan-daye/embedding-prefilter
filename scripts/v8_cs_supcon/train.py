@@ -270,7 +270,8 @@ def main():
         print(f"  训练集: {train_emb.shape}, 验证集: {val_emb.shape}")
     else:
         print("\n[1/7] 加载 V7 encoder...")
-        emb_device = torch.device('cpu')
+        emb_device = get_device()  # A100: 用 cuda 加速编码器前向（嵌入 device 无关）
+        print(f"  编码器 device: {emb_device}")
         encoder, tokenizer = load_v7_encoder(emb_device)
 
         print("\n[2/7] 加载 V7 训练数据...")
