@@ -1,0 +1,34 @@
+[
+  {
+    "enc": "BGE-base(v7ft)",
+    "dec": "双质心(v9)",
+    "JBB_FPR": 0.2667,
+    "XSTest_FPR": 0.56,
+    "attack_DR": 0.546,
+    "DR_met": true
+  },
+  {
+    "enc": "BGE-base(v7ft)",
+    "dec": "判别logistic",
+    "JBB_FPR": 0.3,
+    "XSTest_FPR": 0.0133,
+    "attack_DR": 0.2824,
+    "DR_met": true
+  },
+  {
+    "enc": "E5-large",
+    "dec": "双质心(v9)",
+    "JBB_FPR": 0.9333,
+    "XSTest_FPR": 0.1067,
+    "attack_DR": 0.6389,
+    "DR_met": true
+  },
+  {
+    "enc": "E5-large",
+    "dec": "判别logistic",
+    "JBB_FPR": 0.2667,
+    "XSTest_FPR": 0.0133,
+    "attack_DR": 0.2105,
+    "DR_met": true
+  }
+]
