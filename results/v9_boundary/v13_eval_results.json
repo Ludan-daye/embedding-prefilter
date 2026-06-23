@@ -1,0 +1,62 @@
+[
+  {
+    "enc": "BGE-base(v7ft)",
+    "dec": "双质心(v9)",
+    "attack_DR": 0.889,
+    "JBB_FPR": 0.7,
+    "XSTest_FPR": 0.7733,
+    "per_attack": {
+      "AdvBench": 0.967,
+      "HarmBench": 0.933,
+      "GCG": 0.933,
+      "PAIR": 0.654,
+      "JailbreakHub": 0.958
+    },
+    "DR_met": true
+  },
+  {
+    "enc": "BGE-base(v7ft)",
+    "dec": "判别logistic",
+    "attack_DR": 0.957,
+    "JBB_FPR": 0.3667,
+    "XSTest_FPR": 0.1333,
+    "per_attack": {
+      "AdvBench": 0.983,
+      "HarmBench": 0.917,
+      "GCG": 1.0,
+      "PAIR": 0.885,
+      "JailbreakHub": 1.0
+    },
+    "DR_met": true
+  },
+  {
+    "enc": "E5-large",
+    "dec": "双质心(v9)",
+    "attack_DR": 0.8426,
+    "JBB_FPR": 0.5,
+    "XSTest_FPR": 0.2267,
+    "per_attack": {
+      "AdvBench": 0.95,
+      "HarmBench": 0.633,
+      "GCG": 0.867,
+      "PAIR": 0.846,
+      "JailbreakHub": 0.917
+    },
+    "DR_met": true
+  },
+  {
+    "enc": "E5-large",
+    "dec": "判别logistic",
+    "attack_DR": 0.8808,
+    "JBB_FPR": 0.2,
+    "XSTest_FPR": 0.0,
+    "per_attack": {
+      "AdvBench": 0.933,
+      "HarmBench": 0.85,
+      "GCG": 0.967,
+      "PAIR": 0.654,
+      "JailbreakHub": 1.0
+    },
+    "DR_met": true
+  }
+]
