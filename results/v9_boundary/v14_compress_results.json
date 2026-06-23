@@ -1,0 +1,86 @@
+[
+  {
+    "compress": "full-768",
+    "dim": 768,
+    "attack_DR": 0.957,
+    "JBB_FPR": 0.3667,
+    "XSTest_FPR": 0.1333,
+    "per_attack": {
+      "AdvBench": 0.983,
+      "HarmBench": 0.917,
+      "GCG": 1.0,
+      "PAIR": 0.885,
+      "JailbreakHub": 1.0
+    }
+  },
+  {
+    "compress": "rand-256",
+    "dim": 256,
+    "attack_DR": 0.958,
+    "JBB_FPR": 0.3667,
+    "XSTest_FPR": 0.1467,
+    "per_attack": {
+      "AdvBench": 0.95,
+      "HarmBench": 0.917,
+      "GCG": 1.0,
+      "PAIR": 0.923,
+      "JailbreakHub": 1.0
+    }
+  },
+  {
+    "compress": "rand-128",
+    "dim": 128,
+    "attack_DR": 0.8658,
+    "JBB_FPR": 0.3333,
+    "XSTest_FPR": 0.08,
+    "per_attack": {
+      "AdvBench": 0.783,
+      "HarmBench": 0.733,
+      "GCG": 0.967,
+      "PAIR": 0.846,
+      "JailbreakHub": 1.0
+    }
+  },
+  {
+    "compress": "rand-64",
+    "dim": 64,
+    "attack_DR": 0.9116,
+    "JBB_FPR": 0.4,
+    "XSTest_FPR": 0.2267,
+    "per_attack": {
+      "AdvBench": 0.867,
+      "HarmBench": 0.883,
+      "GCG": 1.0,
+      "PAIR": 0.808,
+      "JailbreakHub": 1.0
+    }
+  },
+  {
+    "compress": "rand-32",
+    "dim": 32,
+    "attack_DR": 0.8972,
+    "JBB_FPR": 0.5667,
+    "XSTest_FPR": 0.32,
+    "per_attack": {
+      "AdvBench": 0.867,
+      "HarmBench": 0.85,
+      "GCG": 1.0,
+      "PAIR": 0.769,
+      "JailbreakHub": 1.0
+    }
+  },
+  {
+    "compress": "PCA-32",
+    "dim": 32,
+    "attack_DR": 0.868,
+    "JBB_FPR": 0.2667,
+    "XSTest_FPR": 0.0533,
+    "per_attack": {
+      "AdvBench": 0.767,
+      "HarmBench": 0.65,
+      "GCG": 1.0,
+      "PAIR": 0.923,
+      "JailbreakHub": 1.0
+    }
+  }
+]
