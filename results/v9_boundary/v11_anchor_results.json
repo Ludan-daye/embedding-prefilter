@@ -1,0 +1,16 @@
+{
+  "v9_frozen": {
+    "tag": "v9冻结",
+    "JBB_FPR": 0.6333,
+    "XSTest_FPR": 0.6933,
+    "attack_DR": 0.7898,
+    "DR_met": true
+  },
+  "v11_anchor": {
+    "tag": "v11锚点微调后",
+    "JBB_FPR": 0.3,
+    "XSTest_FPR": 0.5467,
+    "attack_DR": 0.5856,
+    "DR_met": true
+  }
+}
