@@ -1,0 +1,565 @@
+{
+  "rows": [
+    {
+      "config": "v9 现状 learned-32D(统一口径)",
+      "AdvBench_DR": 0.88,
+      "HarmBench_DR": 0.915,
+      "mean_attack_DR": 0.8358,
+      "JBB_Benign_FPR": 0.49,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.3862,
+      "Youden_J": 0.4495
+    },
+    {
+      "config": "v10 d32_l0.5_m0.3_nc1",
+      "AdvBench_DR": 0.865,
+      "HarmBench_DR": 0.935,
+      "mean_attack_DR": 0.8349,
+      "JBB_Benign_FPR": 0.5,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.385,
+      "Youden_J": 0.4499
+    },
+    {
+      "config": "v10 d32_l0.5_m0.3_nc3",
+      "AdvBench_DR": 0.88,
+      "HarmBench_DR": 0.945,
+      "mean_attack_DR": 0.8427,
+      "JBB_Benign_FPR": 0.53,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.3967,
+      "Youden_J": 0.4461
+    },
+    {
+      "config": "v10 d32_l0.5_m0.5_nc1",
+      "AdvBench_DR": 0.865,
+      "HarmBench_DR": 0.935,
+      "mean_attack_DR": 0.8349,
+      "JBB_Benign_FPR": 0.5,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.385,
+      "Youden_J": 0.4499
+    },
+    {
+      "config": "v10 d32_l0.5_m0.5_nc3",
+      "AdvBench_DR": 0.875,
+      "HarmBench_DR": 0.94,
+      "mean_attack_DR": 0.8375,
+      "JBB_Benign_FPR": 0.53,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.395,
+      "Youden_J": 0.4425
+    },
+    {
+      "config": "v10 d32_l0.5_m0.7_nc1",
+      "AdvBench_DR": 0.865,
+      "HarmBench_DR": 0.935,
+      "mean_attack_DR": 0.8349,
+      "JBB_Benign_FPR": 0.5,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.385,
+      "Youden_J": 0.4499
+    },
+    {
+      "config": "v10 d32_l0.5_m0.7_nc3",
+      "AdvBench_DR": 0.875,
+      "HarmBench_DR": 0.94,
+      "mean_attack_DR": 0.8375,
+      "JBB_Benign_FPR": 0.53,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.395,
+      "Youden_J": 0.4425
+    },
+    {
+      "config": "v10 d32_l1.0_m0.3_nc1",
+      "AdvBench_DR": 0.855,
+      "HarmBench_DR": 0.915,
+      "mean_attack_DR": 0.8275,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.3775,
+      "Youden_J": 0.45
+    },
+    {
+      "config": "v10 d32_l1.0_m0.3_nc3",
+      "AdvBench_DR": 0.86,
+      "HarmBench_DR": 0.89,
+      "mean_attack_DR": 0.815,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3654,
+      "Youden_J": 0.4496
+    },
+    {
+      "config": "v10 d32_l1.0_m0.5_nc1",
+      "AdvBench_DR": 0.855,
+      "HarmBench_DR": 0.915,
+      "mean_attack_DR": 0.8275,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.3775,
+      "Youden_J": 0.45
+    },
+    {
+      "config": "v10 d32_l1.0_m0.5_nc3",
+      "AdvBench_DR": 0.86,
+      "HarmBench_DR": 0.89,
+      "mean_attack_DR": 0.815,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3654,
+      "Youden_J": 0.4496
+    },
+    {
+      "config": "v10 d32_l1.0_m0.7_nc1",
+      "AdvBench_DR": 0.855,
+      "HarmBench_DR": 0.915,
+      "mean_attack_DR": 0.8275,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.3775,
+      "Youden_J": 0.45
+    },
+    {
+      "config": "v10 d32_l1.0_m0.7_nc3",
+      "AdvBench_DR": 0.86,
+      "HarmBench_DR": 0.89,
+      "mean_attack_DR": 0.815,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3654,
+      "Youden_J": 0.4496
+    },
+    {
+      "config": "v10 d32_l2.0_m0.3_nc1",
+      "AdvBench_DR": 0.86,
+      "HarmBench_DR": 0.915,
+      "mean_attack_DR": 0.8271,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.38,
+      "Youden_J": 0.4471
+    },
+    {
+      "config": "v10 d32_l2.0_m0.3_nc3",
+      "AdvBench_DR": 0.865,
+      "HarmBench_DR": 0.905,
+      "mean_attack_DR": 0.8233,
+      "JBB_Benign_FPR": 0.49,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3771,
+      "Youden_J": 0.4463
+    },
+    {
+      "config": "v10 d32_l2.0_m0.5_nc1",
+      "AdvBench_DR": 0.86,
+      "HarmBench_DR": 0.915,
+      "mean_attack_DR": 0.8271,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.38,
+      "Youden_J": 0.4471
+    },
+    {
+      "config": "v10 d32_l2.0_m0.5_nc3",
+      "AdvBench_DR": 0.865,
+      "HarmBench_DR": 0.905,
+      "mean_attack_DR": 0.8217,
+      "JBB_Benign_FPR": 0.49,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3762,
+      "Youden_J": 0.4454
+    },
+    {
+      "config": "v10 d32_l2.0_m0.7_nc1",
+      "AdvBench_DR": 0.86,
+      "HarmBench_DR": 0.915,
+      "mean_attack_DR": 0.8271,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.38,
+      "Youden_J": 0.4471
+    },
+    {
+      "config": "v10 d32_l2.0_m0.7_nc3",
+      "AdvBench_DR": 0.865,
+      "HarmBench_DR": 0.905,
+      "mean_attack_DR": 0.8217,
+      "JBB_Benign_FPR": 0.49,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3762,
+      "Youden_J": 0.4454
+    },
+    {
+      "config": "v10 d48_l0.5_m0.3_nc1",
+      "AdvBench_DR": 0.87,
+      "HarmBench_DR": 0.9,
+      "mean_attack_DR": 0.8211,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3588,
+      "Youden_J": 0.4624
+    },
+    {
+      "config": "v10 d48_l0.5_m0.3_nc3",
+      "AdvBench_DR": 0.875,
+      "HarmBench_DR": 0.91,
+      "mean_attack_DR": 0.8236,
+      "JBB_Benign_FPR": 0.51,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.3817,
+      "Youden_J": 0.4419
+    },
+    {
+      "config": "v10 d48_l0.5_m0.5_nc1",
+      "AdvBench_DR": 0.87,
+      "HarmBench_DR": 0.9,
+      "mean_attack_DR": 0.8211,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3588,
+      "Youden_J": 0.4624
+    },
+    {
+      "config": "v10 d48_l0.5_m0.5_nc3",
+      "AdvBench_DR": 0.875,
+      "HarmBench_DR": 0.91,
+      "mean_attack_DR": 0.8236,
+      "JBB_Benign_FPR": 0.51,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.3817,
+      "Youden_J": 0.4419
+    },
+    {
+      "config": "v10 d48_l0.5_m0.7_nc1",
+      "AdvBench_DR": 0.87,
+      "HarmBench_DR": 0.9,
+      "mean_attack_DR": 0.8211,
+      "JBB_Benign_FPR": 0.47,
+      "Alpaca_FPR": 0.025,
+      "mean_benign_FPR": 0.3588,
+      "Youden_J": 0.4624
+    },
+    {
+      "config": "v10 d48_l0.5_m0.7_nc3",
+      "AdvBench_DR": 0.875,
+      "HarmBench_DR": 0.91,
+      "mean_attack_DR": 0.8236,
+      "JBB_Benign_FPR": 0.51,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.3817,
+      "Youden_J": 0.4419
+    },
+    {
+      "config": "v10 d48_l1.0_m0.3_nc1",
+      "AdvBench_DR": 0.895,
+      "HarmBench_DR": 0.945,
+      "mean_attack_DR": 0.8565,
+      "JBB_Benign_FPR": 0.58,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.4216,
+      "Youden_J": 0.4349
+    },
+    {
+      "config": "v10 d48_l1.0_m0.3_nc3",
+      "AdvBench_DR": 0.9,
+      "HarmBench_DR": 0.94,
+      "mean_attack_DR": 0.8525,
+      "JBB_Benign_FPR": 0.6,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4221,
+      "Youden_J": 0.4304
+    },
+    {
+      "config": "v10 d48_l1.0_m0.5_nc1",
+      "AdvBench_DR": 0.895,
+      "HarmBench_DR": 0.945,
+      "mean_attack_DR": 0.8565,
+      "JBB_Benign_FPR": 0.58,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.4216,
+      "Youden_J": 0.4349
+    },
+    {
+      "config": "v10 d48_l1.0_m0.5_nc3",
+      "AdvBench_DR": 0.9,
+      "HarmBench_DR": 0.94,
+      "mean_attack_DR": 0.8525,
+      "JBB_Benign_FPR": 0.6,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4221,
+      "Youden_J": 0.4304
+    },
+    {
+      "config": "v10 d48_l1.0_m0.7_nc1",
+      "AdvBench_DR": 0.895,
+      "HarmBench_DR": 0.945,
+      "mean_attack_DR": 0.8565,
+      "JBB_Benign_FPR": 0.58,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.4216,
+      "Youden_J": 0.4349
+    },
+    {
+      "config": "v10 d48_l1.0_m0.7_nc3",
+      "AdvBench_DR": 0.9,
+      "HarmBench_DR": 0.94,
+      "mean_attack_DR": 0.8525,
+      "JBB_Benign_FPR": 0.6,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4221,
+      "Youden_J": 0.4304
+    },
+    {
+      "config": "v10 d48_l2.0_m0.3_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.935,
+      "mean_attack_DR": 0.8497,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.415,
+      "Youden_J": 0.4347
+    },
+    {
+      "config": "v10 d48_l2.0_m0.3_nc3",
+      "AdvBench_DR": 0.91,
+      "HarmBench_DR": 0.975,
+      "mean_attack_DR": 0.8708,
+      "JBB_Benign_FPR": 0.63,
+      "Alpaca_FPR": 0.045,
+      "mean_benign_FPR": 0.4479,
+      "Youden_J": 0.4229
+    },
+    {
+      "config": "v10 d48_l2.0_m0.5_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.935,
+      "mean_attack_DR": 0.8497,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.415,
+      "Youden_J": 0.4347
+    },
+    {
+      "config": "v10 d48_l2.0_m0.5_nc3",
+      "AdvBench_DR": 0.91,
+      "HarmBench_DR": 0.975,
+      "mean_attack_DR": 0.8708,
+      "JBB_Benign_FPR": 0.63,
+      "Alpaca_FPR": 0.045,
+      "mean_benign_FPR": 0.4479,
+      "Youden_J": 0.4229
+    },
+    {
+      "config": "v10 d48_l2.0_m0.7_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.935,
+      "mean_attack_DR": 0.8497,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.415,
+      "Youden_J": 0.4347
+    },
+    {
+      "config": "v10 d48_l2.0_m0.7_nc3",
+      "AdvBench_DR": 0.91,
+      "HarmBench_DR": 0.975,
+      "mean_attack_DR": 0.8708,
+      "JBB_Benign_FPR": 0.63,
+      "Alpaca_FPR": 0.045,
+      "mean_benign_FPR": 0.4479,
+      "Youden_J": 0.4229
+    },
+    {
+      "config": "v10 d64_l0.5_m0.3_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.92,
+      "mean_attack_DR": 0.8317,
+      "JBB_Benign_FPR": 0.51,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.3779,
+      "Youden_J": 0.4538
+    },
+    {
+      "config": "v10 d64_l0.5_m0.3_nc3",
+      "AdvBench_DR": 0.895,
+      "HarmBench_DR": 0.93,
+      "mean_attack_DR": 0.8407,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4012,
+      "Youden_J": 0.4395
+    },
+    {
+      "config": "v10 d64_l0.5_m0.5_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.92,
+      "mean_attack_DR": 0.8317,
+      "JBB_Benign_FPR": 0.51,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.3779,
+      "Youden_J": 0.4538
+    },
+    {
+      "config": "v10 d64_l0.5_m0.5_nc3",
+      "AdvBench_DR": 0.895,
+      "HarmBench_DR": 0.93,
+      "mean_attack_DR": 0.8407,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4012,
+      "Youden_J": 0.4395
+    },
+    {
+      "config": "v10 d64_l0.5_m0.7_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.92,
+      "mean_attack_DR": 0.8317,
+      "JBB_Benign_FPR": 0.51,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.3779,
+      "Youden_J": 0.4538
+    },
+    {
+      "config": "v10 d64_l0.5_m0.7_nc3",
+      "AdvBench_DR": 0.895,
+      "HarmBench_DR": 0.93,
+      "mean_attack_DR": 0.8407,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4012,
+      "Youden_J": 0.4395
+    },
+    {
+      "config": "v10 d64_l1.0_m0.3_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.925,
+      "mean_attack_DR": 0.8391,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4021,
+      "Youden_J": 0.4371
+    },
+    {
+      "config": "v10 d64_l1.0_m0.3_nc3",
+      "AdvBench_DR": 0.91,
+      "HarmBench_DR": 0.965,
+      "mean_attack_DR": 0.8603,
+      "JBB_Benign_FPR": 0.59,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4229,
+      "Youden_J": 0.4374
+    },
+    {
+      "config": "v10 d64_l1.0_m0.5_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.925,
+      "mean_attack_DR": 0.8391,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4021,
+      "Youden_J": 0.4371
+    },
+    {
+      "config": "v10 d64_l1.0_m0.5_nc3",
+      "AdvBench_DR": 0.91,
+      "HarmBench_DR": 0.965,
+      "mean_attack_DR": 0.8603,
+      "JBB_Benign_FPR": 0.59,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4229,
+      "Youden_J": 0.4374
+    },
+    {
+      "config": "v10 d64_l1.0_m0.7_nc1",
+      "AdvBench_DR": 0.89,
+      "HarmBench_DR": 0.925,
+      "mean_attack_DR": 0.8391,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4021,
+      "Youden_J": 0.4371
+    },
+    {
+      "config": "v10 d64_l1.0_m0.7_nc3",
+      "AdvBench_DR": 0.91,
+      "HarmBench_DR": 0.965,
+      "mean_attack_DR": 0.8603,
+      "JBB_Benign_FPR": 0.59,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4229,
+      "Youden_J": 0.4374
+    },
+    {
+      "config": "v10 d64_l2.0_m0.3_nc1",
+      "AdvBench_DR": 0.9,
+      "HarmBench_DR": 0.92,
+      "mean_attack_DR": 0.8377,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.4067,
+      "Youden_J": 0.431
+    },
+    {
+      "config": "v10 d64_l2.0_m0.3_nc3",
+      "AdvBench_DR": 0.925,
+      "HarmBench_DR": 0.97,
+      "mean_attack_DR": 0.866,
+      "JBB_Benign_FPR": 0.61,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4363,
+      "Youden_J": 0.4297
+    },
+    {
+      "config": "v10 d64_l2.0_m0.5_nc1",
+      "AdvBench_DR": 0.9,
+      "HarmBench_DR": 0.92,
+      "mean_attack_DR": 0.8377,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.4067,
+      "Youden_J": 0.431
+    },
+    {
+      "config": "v10 d64_l2.0_m0.5_nc3",
+      "AdvBench_DR": 0.925,
+      "HarmBench_DR": 0.965,
+      "mean_attack_DR": 0.8648,
+      "JBB_Benign_FPR": 0.61,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4354,
+      "Youden_J": 0.4293
+    },
+    {
+      "config": "v10 d64_l2.0_m0.7_nc1",
+      "AdvBench_DR": 0.9,
+      "HarmBench_DR": 0.92,
+      "mean_attack_DR": 0.8377,
+      "JBB_Benign_FPR": 0.56,
+      "Alpaca_FPR": 0.03,
+      "mean_benign_FPR": 0.4067,
+      "Youden_J": 0.431
+    },
+    {
+      "config": "v10 d64_l2.0_m0.7_nc3",
+      "AdvBench_DR": 0.925,
+      "HarmBench_DR": 0.965,
+      "mean_attack_DR": 0.8648,
+      "JBB_Benign_FPR": 0.61,
+      "Alpaca_FPR": 0.035,
+      "mean_benign_FPR": 0.4354,
+      "Youden_J": 0.4293
+    }
+  ],
+  "v9_J": 0.4495,
+  "best": {
+    "config": "v10 d48_l0.5_m0.3_nc1",
+    "AdvBench_DR": 0.87,
+    "HarmBench_DR": 0.9,
+    "mean_attack_DR": 0.8211,
+    "JBB_Benign_FPR": 0.47,
+    "Alpaca_FPR": 0.025,
+    "mean_benign_FPR": 0.3588,
+    "Youden_J": 0.4624
+  }
+}

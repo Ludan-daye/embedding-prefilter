@@ -1,0 +1,23 @@
+{
+  "A_no_margin": {
+    "JBB_FPR": 0.39,
+    "XSTest_FPR": 0.656,
+    "attack_DR": 0.8108,
+    "DR_met": true,
+    "marg_active": null
+  },
+  "B_margin_ORBench": {
+    "JBB_FPR": 0.4,
+    "XSTest_FPR": 0.676,
+    "attack_DR": 0.83,
+    "DR_met": true,
+    "marg_active": 1.0
+  },
+  "C_margin_matched": {
+    "JBB_FPR": 0.39,
+    "XSTest_FPR": 0.58,
+    "attack_DR": 0.8214,
+    "DR_met": true,
+    "marg_active": "~1.0(5折)"
+  }
+}

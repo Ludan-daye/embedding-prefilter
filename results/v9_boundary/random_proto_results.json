@@ -1,0 +1,72 @@
+[
+  {
+    "config": "learned-32D (v9 现状)",
+    "AdvBench_DR": 0.705,
+    "HarmBench_DR": 0.795,
+    "mean_attack_DR": 0.7259,
+    "JBB_Benign_FPR": 0.25,
+    "Alpaca_FPR": 0.01,
+    "mean_benign_FPR": 0.2733,
+    "Youden_J": 0.4525
+  },
+  {
+    "config": "random+kmeans-32D",
+    "AdvBench_DR": 0.31,
+    "HarmBench_DR": 0.64,
+    "mean_attack_DR": 0.5733,
+    "JBB_Benign_FPR": 0.23,
+    "Alpaca_FPR": 0.025,
+    "mean_benign_FPR": 0.2562,
+    "Youden_J": 0.317
+  },
+  {
+    "config": "random+proto-32D (重设计)",
+    "AdvBench_DR": 0.605,
+    "HarmBench_DR": 0.78,
+    "mean_attack_DR": 0.7074,
+    "JBB_Benign_FPR": 0.41,
+    "Alpaca_FPR": 0.04,
+    "mean_benign_FPR": 0.3367,
+    "Youden_J": 0.3708
+  },
+  {
+    "config": "random+kmeans-64D",
+    "AdvBench_DR": 0.38,
+    "HarmBench_DR": 0.45,
+    "mean_attack_DR": 0.5505,
+    "JBB_Benign_FPR": 0.2,
+    "Alpaca_FPR": 0.02,
+    "mean_benign_FPR": 0.2275,
+    "Youden_J": 0.323
+  },
+  {
+    "config": "random+proto-64D (重设计)",
+    "AdvBench_DR": 0.7,
+    "HarmBench_DR": 0.79,
+    "mean_attack_DR": 0.7508,
+    "JBB_Benign_FPR": 0.35,
+    "Alpaca_FPR": 0.04,
+    "mean_benign_FPR": 0.3125,
+    "Youden_J": 0.4383
+  },
+  {
+    "config": "random+kmeans-128D",
+    "AdvBench_DR": 0.535,
+    "HarmBench_DR": 0.605,
+    "mean_attack_DR": 0.6004,
+    "JBB_Benign_FPR": 0.34,
+    "Alpaca_FPR": 0.02,
+    "mean_benign_FPR": 0.2833,
+    "Youden_J": 0.3171
+  },
+  {
+    "config": "random+proto-128D (重设计)",
+    "AdvBench_DR": 0.69,
+    "HarmBench_DR": 0.8,
+    "mean_attack_DR": 0.7455,
+    "JBB_Benign_FPR": 0.48,
+    "Alpaca_FPR": 0.02,
+    "mean_benign_FPR": 0.3642,
+    "Youden_J": 0.3813
+  }
+]

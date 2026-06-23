@@ -1,0 +1,16 @@
+{
+  "v9_frozen(before)": {
+    "tag": "v9冻结(微调前)",
+    "JBB_FPR": 0.6333,
+    "XSTest_FPR": 0.6933,
+    "attack_DR": 0.7898,
+    "DR_met": true
+  },
+  "v11_finetuned(after)": {
+    "tag": "v11微调后",
+    "JBB_FPR": 0.4333,
+    "XSTest_FPR": 0.0,
+    "attack_DR": 0.4751,
+    "DR_met": true
+  }
+}
