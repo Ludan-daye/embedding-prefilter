@@ -1,0 +1,239 @@
+{
+  "protocol": "heldout-30pct (overlap sets split 70/30 seed42; ToxicChat/BeaverTails full)",
+  "eval_sizes": {
+    "AdvBench": 60,
+    "HarmBench": 60,
+    "GCG": 30,
+    "PAIR": 26,
+    "JailbreakHub": 24,
+    "ToxicChat_harmful": 300,
+    "BeaverTails_harmful": 300,
+    "JBB_Benign": 30,
+    "XSTest": 75,
+    "Alpaca": 60,
+    "ToxicChat_benign": 300,
+    "BeaverTails_benign": 300
+  },
+  "results": {
+    "final_BGE_logistic": {
+      "params": "~800",
+      "dim": "768D",
+      "per": {
+        "AdvBench": 0.95,
+        "HarmBench": 0.8333,
+        "GCG": 1.0,
+        "PAIR": 0.9615,
+        "JailbreakHub": 1.0,
+        "ToxicChat_harmful": 0.25,
+        "BeaverTails_harmful": 0.2333,
+        "JBB_Benign": 0.2667,
+        "XSTest": 0.0267,
+        "Alpaca": 0.0167,
+        "ToxicChat_benign": 0.1367,
+        "BeaverTails_benign": 0.14
+      },
+      "attack_DR_5": 0.949,
+      "youden_J": 0.8456
+    },
+    "final_BGE_PCA32": {
+      "params": "~32",
+      "dim": "32D",
+      "per": {
+        "AdvBench": 0.9167,
+        "HarmBench": 0.8667,
+        "GCG": 1.0,
+        "PAIR": 0.9231,
+        "JailbreakHub": 1.0,
+        "ToxicChat_harmful": 0.37,
+        "BeaverTails_harmful": 0.39,
+        "JBB_Benign": 0.3667,
+        "XSTest": 0.16,
+        "Alpaca": 0.0333,
+        "ToxicChat_benign": 0.1833,
+        "BeaverTails_benign": 0.38
+      },
+      "attack_DR_5": 0.9413,
+      "youden_J": 0.7546
+    },
+    "final_E5_logistic": {
+      "params": "~1024",
+      "dim": "1024D",
+      "per": {
+        "AdvBench": 0.9333,
+        "HarmBench": 0.9167,
+        "GCG": 0.9333,
+        "PAIR": 0.8462,
+        "JailbreakHub": 0.9583,
+        "ToxicChat_harmful": 0.2,
+        "BeaverTails_harmful": 0.07,
+        "JBB_Benign": 0.1667,
+        "XSTest": 0.04,
+        "Alpaca": 0.0,
+        "ToxicChat_benign": 0.0667,
+        "BeaverTails_benign": 0.0333
+      },
+      "attack_DR_5": 0.9176,
+      "youden_J": 0.8487
+    },
+    "ours_v9": {
+      "params": "25K proj",
+      "dim": "32D",
+      "per": {
+        "AdvBench": 0.65,
+        "HarmBench": 0.8833,
+        "GCG": 1.0,
+        "PAIR": 0.5769,
+        "JailbreakHub": 0.9167,
+        "ToxicChat_harmful": 0.2967,
+        "BeaverTails_harmful": 0.94,
+        "JBB_Benign": 0.3,
+        "XSTest": 0.5867,
+        "Alpaca": 0.0,
+        "ToxicChat_benign": 0.06,
+        "BeaverTails_benign": 0.8267
+      },
+      "attack_DR_5": 0.8054,
+      "youden_J": 0.5098
+    },
+    "bge_svm": {
+      "params": "109M enc",
+      "dim": "768D",
+      "per": {
+        "AdvBench": 0.6667,
+        "HarmBench": 0.9333,
+        "GCG": 0.9333,
+        "PAIR": 0.6923,
+        "JailbreakHub": 0.5833,
+        "ToxicChat_harmful": 0.33,
+        "BeaverTails_harmful": 0.9567,
+        "JBB_Benign": 0.5,
+        "XSTest": 0.5867,
+        "Alpaca": 0.0,
+        "ToxicChat_benign": 0.16,
+        "BeaverTails_benign": 0.8333
+      },
+      "attack_DR_5": 0.7618,
+      "youden_J": 0.3996
+    },
+    "bge_cosine": {
+      "params": "109M enc",
+      "dim": "768D",
+      "per": {
+        "AdvBench": 0.6167,
+        "HarmBench": 0.7167,
+        "GCG": 0.7667,
+        "PAIR": 0.1923,
+        "JailbreakHub": 0.7917,
+        "ToxicChat_harmful": 0.5867,
+        "BeaverTails_harmful": 0.96,
+        "JBB_Benign": 0.5,
+        "XSTest": 0.7733,
+        "Alpaca": 0.2833,
+        "ToxicChat_benign": 0.3,
+        "BeaverTails_benign": 0.8433
+      },
+      "attack_DR_5": 0.6168,
+      "youden_J": 0.0979
+    },
+    "tfidf_lr": {
+      "params": "~5K",
+      "dim": "-",
+      "per": {
+        "AdvBench": 0.4,
+        "HarmBench": 0.8167,
+        "GCG": 0.6667,
+        "PAIR": 0.2692,
+        "JailbreakHub": 0.4167,
+        "ToxicChat_harmful": 0.21,
+        "BeaverTails_harmful": 0.7967,
+        "JBB_Benign": 0.2667,
+        "XSTest": 0.3333,
+        "Alpaca": 0.0,
+        "ToxicChat_benign": 0.1267,
+        "BeaverTails_benign": 0.68
+      },
+      "attack_DR_5": 0.5139,
+      "youden_J": 0.3139
+    },
+    "keyword": {
+      "params": "0",
+      "dim": "-",
+      "per": {
+        "AdvBench": 0.6167,
+        "HarmBench": 0.2333,
+        "GCG": 0.3333,
+        "PAIR": 0.6538,
+        "JailbreakHub": 0.9167,
+        "ToxicChat_harmful": 0.1167,
+        "BeaverTails_harmful": 0.1867,
+        "JBB_Benign": 0.2667,
+        "XSTest": 0.0933,
+        "Alpaca": 0.0333,
+        "ToxicChat_benign": 0.02,
+        "BeaverTails_benign": 0.1033
+      },
+      "attack_DR_5": 0.5508,
+      "youden_J": 0.4197
+    },
+    "perplexity_lgb": {
+      "params": "~0",
+      "dim": "-",
+      "per": {
+        "AdvBench": 0.0,
+        "HarmBench": 0.0167,
+        "GCG": 1.0,
+        "PAIR": 0.0,
+        "JailbreakHub": 0.0,
+        "ToxicChat_harmful": 0.0,
+        "BeaverTails_harmful": 0.0,
+        "JBB_Benign": 0.0,
+        "XSTest": 0.0,
+        "Alpaca": 0.0,
+        "ToxicChat_benign": 0.0133,
+        "BeaverTails_benign": 0.0
+      },
+      "attack_DR_5": 0.2033,
+      "youden_J": 0.2033
+    },
+    "injecguard": {
+      "params": "184M",
+      "dim": "-",
+      "per": {
+        "AdvBench": 0.7167,
+        "HarmBench": 0.2167,
+        "GCG": 0.9333,
+        "PAIR": 0.2692,
+        "JailbreakHub": 1.0,
+        "ToxicChat_harmful": 0.1133,
+        "BeaverTails_harmful": 0.0,
+        "JBB_Benign": 0.2333,
+        "XSTest": 0.0,
+        "Alpaca": 0.05,
+        "ToxicChat_benign": 0.03,
+        "BeaverTails_benign": 0.0
+      },
+      "attack_DR_5": 0.6272,
+      "youden_J": 0.5328
+    },
+    "protectai": {
+      "params": "184M",
+      "dim": "-",
+      "per": {
+        "AdvBench": 0.0,
+        "HarmBench": 0.0,
+        "GCG": 0.6333,
+        "PAIR": 0.3462,
+        "JailbreakHub": 0.9583,
+        "ToxicChat_harmful": 0.04,
+        "BeaverTails_harmful": 0.0,
+        "JBB_Benign": 0.0333,
+        "XSTest": 0.0,
+        "Alpaca": 0.0,
+        "ToxicChat_benign": 0.0067,
+        "BeaverTails_benign": 0.0033
+      },
+      "attack_DR_5": 0.3876,
+      "youden_J": 0.3765
+    }
+  }
+}
