@@ -55,6 +55,7 @@
 | C′. 极致压缩 | BGE-base | PCA-32(24×) | 0.947 | 0.453 | 0.147 | 24× 但综合 J 掉 ~0.09,仅极端存储受限时用 |
 
 > 建议论文把"**判别头 recipe(编码器无关)**"作为主贡献,A/B/C 作为一条 Pareto 前沿呈现,而不是只押一个点。
+> **注(v17 定论)**:**E5 不耐压**——每个压缩比都稳健更差,故没有"E5+压缩"变体;A(E5)只作**不压缩上限**。**压缩区间的主角是 C(BGE+PCA-128)**,同 128 维下 BGE-压缩(J 0.801)> E5-压缩(J 0.769)。若以"压缩版为论文主体",主角 = **BGE+PCA-128(128D,6×)**。
 
 ---
 
@@ -115,6 +116,22 @@ J = 攻击DR5 − mean(JBB, XSTest);ΔJ = 每种子内相对不压缩(full-768)�
 1. **没有任何压缩变体在综合 J 上"严格优于"不压缩** —— 最好的(PCA-128/153、随机-256)只是与不压缩**统计打平**(ΔJ 跨 0)。此前单种子看到的"PCA-32 三赢/更好"是**小样本噪声**,种子确认后不成立。
 2. **但 PCA 压到 ~6× 是"统计免费"的**:PCA-128(6×)J 0.753±.03,与不压缩 0.741±.04 无显著差,头却**小 6×**。→ 部署卖点是"**小 6×、零可测损失**"。
 3. **PCA 在每个压缩比都碾压随机**,且压得越狠差距越大(24× 时 J 0.647 vs 0.427);6× 以上即使 PCA 也开始掉(过度拒绝抬头)。→ 稠密安全信号用**结构化(PCA)**压缩最划算。
+
+### 表 2b · E5 压缩 sweep(5 种子)——★关键:E5 压不动
+来源:`results/v9_boundary/v17_e5_compress_seeds_results.json`(种子 42–46)。J 口径同表4(含 Alpaca)。
+
+| 压缩 | 维度 | 比例 | 攻击DR5 | JBB | XSTest | J | ΔJ vs 不压缩E5 | 判定 |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| 不压缩 | 1024 | 1× | 0.923±.02 | 0.227 | 0.016 | 0.839±.006 | 基准 | 基准 |
+| PCA | 256 | 4× | 0.881±.02 | 0.247 | 0.011 | 0.794±.024 | −0.045±.024 | 更差 |
+| PCA | 128 | 8× | 0.879±.02 | 0.300 | 0.005 | 0.769±.023 | −0.070±.027 | 更差 |
+| PCA | 32 | 32× | 0.886±.01 | 0.500 | 0.027 | 0.702±.024 | −0.137±.027 | 更差 |
+| 随机(全部) | — | 4–32× | — | — | — | ≤0.724 | ≤−0.115 | 更差 |
+
+**定论(与 BGE 相反)**:
+1. **E5 压不动**:**每一个**压缩变体都**稳健更差**(连最温和 4× 都 ΔJ −0.045±.024,mean+std<0);对照 BGE 的 PCA-6× 是"免费"。E5 的 1024 维用得很满,砍维即掉攻击 DR、抬 JBB。
+2. **同维度头对头(128D)BGE 反而赢 E5**:BGE→PCA-128 **J 0.801** > E5→PCA-128 **J 0.769**。→ **压缩区间选 BGE,E5 的优势只存在于不压缩。**
+3. 含义(可写进论文):压缩耐受度是**编码器特性**——BGE 的稠密表示耐压、E5 不耐压;这也复证了"稠密⇒耐压"的设计动机(§1 加成二)。
 
 ### 表 3 · 每类攻击 DR(留出)
 来源:同上两个 JSON 的 `per_attack`
@@ -187,7 +204,8 @@ J = 攻击DR5 − mean(JBB, XSTest);ΔJ = 每种子内相对不压缩(full-768)�
 |---|---|---|
 | 表1 决策规则 2×2 消融(5 种子) | `scripts/v9_boundary/v16_decision_seeds.py` | `results/v9_boundary/v16_decision_seeds_results.json` |
 | 表1 单种子(历史) | `scripts/v9_boundary/v13_eval.py` | `results/v9_boundary/v13_eval_results.json` |
-| 表2 压缩 × 判别头(5 种子定论) | `scripts/v9_boundary/v15_compress_seeds.py` | `results/v9_boundary/v15_compress_seeds_results.json` |
+| 表2 BGE 压缩 × 判别头(5 种子定论) | `scripts/v9_boundary/v15_compress_seeds.py` | `results/v9_boundary/v15_compress_seeds_results.json` |
+| 表2b E5 压缩 sweep(5 种子, E5 压不动) | `scripts/v9_boundary/v17_e5_compress_seeds.py` | `results/v9_boundary/v17_e5_compress_seeds_results.json` |
 | 表2 压缩(单种子,历史) | `scripts/v9_boundary/v14_compress.py` | `results/v9_boundary/v14_compress_results.json` |
 | "过度拒绝=决策规则"(AUC≈0.999) | `scripts/v9_boundary/encoder_sweep.py` | (server 日志 / encoder_sweep 输出) |
 | CS 前提被推翻(6 实验,稠密) | `scripts/v9_boundary/{subspace_concentration,subspace_hard,subspace_decision,precondition_lowdim,boundary_subspace,pooling_boundary}.py` | `results/v9_boundary/PREMISE_ANALYSIS.md` |

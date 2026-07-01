@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2026-07-01 — v17 E5 压缩 sweep:E5 压不动(反直觉,关键)
+
+- 新增 [`scripts/v9_boundary/v17_e5_compress_seeds.py`](scripts/v9_boundary/v17_e5_compress_seeds.py) + [`results/v9_boundary/v17_e5_compress_seeds_results.json`](results/v9_boundary/v17_e5_compress_seeds_results.json)。E5-large 编码一次,5 种子 × {4×,6.7×,8×,16×,32×} × {随机,PCA}。
+- **定论(与 BGE 相反)**:E5 每个压缩变体都稳健更差(连 4× 都 ΔJ −0.045±.024);对照 BGE PCA-6× 是免费。**同 128 维头对头 BGE 反赢 E5**(BGE→PCA-128 J 0.801 > E5→PCA-128 J 0.769)。→ 压缩区间选 BGE,E5 优势只在不压缩;压缩耐受度是编码器特性(稠密⇒耐压)。
+- 据此定"压缩版论文主角 = BGE+PCA-128(128D,6×)";E5 作不压缩上限。`FINAL_SYSTEM.md` §1/§2/§4(新增表2b)/§7 更新。
+
 ## 2026-07-01 — 表1 + 表4 5 种子确认(主结果表全部钉死)
 
 - 新增 [`scripts/v9_boundary/v16_decision_seeds.py`](scripts/v9_boundary/v16_decision_seeds.py) + [`results/v9_boundary/v16_decision_seeds_results.json`](results/v9_boundary/v16_decision_seeds_results.json):表1 判别头 2×2,5 种子。BGE 双质心→判别头 XSTest 0.656±.010→**0.013±.012**、攻击 DR 0.865→0.913;std 远小于差距 → 决策规则结论铁证。
